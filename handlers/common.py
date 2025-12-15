@@ -1,0 +1,26 @@
+from telegram import (
+    Update,
+    InlineKeyboardMarkup,
+)
+from telegram.ext import (
+    ContextTypes,
+)
+
+from db.user_crud import get_user, create_user
+from config.states import MAINMENU
+
+
+async def start(update: Update, context: ContextTypes.DEFAULT_TYPE) -> int:
+    tg_user = update.effective_user
+    db_user = await get_user(telegram_id=tg_user.id)
+    if not db_user:
+        db_user = await create_user(tg_user.id, tg_user.username)
+        await context.bot.send_message(
+            chat_id=tg_user.id,
+            text=f"Привет, {tg_user.first_name}! Добро пожаловать в бота для создания тренировок.\n\nДля начала работы ответь на несколько вопросов.",
+            )
+        await context.bot.send_message(
+            chat_id=tg_user.id,
+            text=f"",
+            )
+        return MAINMENU
