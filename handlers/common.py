@@ -17,10 +17,10 @@ async def start(update: Update, context: ContextTypes.DEFAULT_TYPE) -> int:
         db_user = await create_user(tg_user.id, tg_user.username)
         await context.bot.send_message(
             chat_id=tg_user.id,
-            text=f"Привет, {tg_user.first_name}! Добро пожаловать в бота для создания тренировок.\n\nДля начала работы ответь на несколько вопросов.",
+            text=f"Привет, {tg_user.first_name}! Добро пожаловать в бота для создания тренировок.\n\nДля начала работы необходимо создать профиль.",
             )
         await context.bot.send_message(
             chat_id=tg_user.id,
-            text=f"",
+            text="Введите свою дату рождения в формате 01.01.2001",
             )
         return MAINMENU
