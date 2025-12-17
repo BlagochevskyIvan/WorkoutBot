@@ -1,1 +1,1 @@
-MAINMENU = range(1)
+MAINMENU, GET_DATE = range(2)
