@@ -19,3 +19,4 @@ async def get_user(telegram_id: int) -> Optional[User]:
         stmt = select(User).where(User.telegram_id == telegram_id)
         result = await session.execute(stmt)
         return result.scalars().first()
+    

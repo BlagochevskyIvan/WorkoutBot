@@ -14,7 +14,8 @@ from config.cp_config import (
 )
 from config.logger import logger
 from config.states import MAINMENU, GET_DATE
-from handlers.common import start, get_date
+from handlers.common import start
+from handlers.profile import get_date
 
 
 def create_bot_app():
