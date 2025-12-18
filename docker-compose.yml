@@ -3,7 +3,7 @@ version: '3.9'
 services:
   db:
     image: postgres:15
-    container_name: base_bot-db-1
+    container_name: workout_bot-db-1
     restart: always
     environment:
       POSTGRES_USER: user
@@ -16,7 +16,7 @@ services:
       timeout: 5s
       retries: 10
     ports:
-      - "5432:5432"
+      - "5434:5432"
     volumes:
       - db_data:/var/lib/postgresql/data
     networks:
@@ -24,7 +24,7 @@ services:
 
   app:
     build: .
-    container_name: base_bot-app-1
+    container_name: workout_bot-app-1
     command: >
       sh -c "echo '⏳ Waiting for DB...' &&
              until pg_isready -h db -U user -d db; do sleep 1; done &&

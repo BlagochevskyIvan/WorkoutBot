@@ -16,7 +16,7 @@ TEMPLATE_PATH = BASE_DIR / "templates"
 
 
 TOKEN = os.getenv("TELEGRAM_TOKEN")
-WEBHOOK_URL = os.getenv("WEBHOOK_URL")  # e.g. https://your.domain/telegram
+WEBHOOK_URL = os.getenv("WEBHOOK_URL")
 WEBHOOK_PATH: str = os.getenv("WEBHOOK_PATH", "/telegram")
 SECRET_TOKEN = os.getenv("TELEGRAM_SECRET") or os.getenv("WEBHOOK_SECRET")
 HOST: str = os.getenv("HOST", "0.0.0.0")
