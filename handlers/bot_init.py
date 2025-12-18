@@ -33,10 +33,6 @@ def create_bot_app():
         states={
             # Работа основного приложения
             MAINMENU: [
-                CallbackQueryHandler(start, pattern="^subscribe$"),
-                CallbackQueryHandler(start, pattern="^info$"),
-                CallbackQueryHandler(start, pattern="^menu$"),
-                CallbackQueryHandler(start, pattern="^rfcard$"),
             ],
             PROFILE: [
                 CallbackQueryHandler(get_gender, pattern="^(male|female)$"),

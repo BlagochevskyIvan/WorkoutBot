@@ -5,10 +5,6 @@ from config.logger import logger
 
 load_dotenv()
 
-CP_BASE_URL = os.getenv("CP_BASE_URL")
-CP_PUBLIC_ID = os.getenv("CP_PUBLIC_ID")
-CP_SECRET_KEY = os.getenv("CP_SECRET_KEY")
-
 TELEGRAM_TOKEN = os.getenv("TELEGRAM_TOKEN")
 
 BASE_DIR = Path(__file__).resolve().parent.parent

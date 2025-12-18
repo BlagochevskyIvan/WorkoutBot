@@ -7,8 +7,7 @@ from telegram.ext import (
     ContextTypes,
 )
 
-from db.user_crud import get_user, create_user
-from config.states import GET_GENDER, PROFILE, MAINMENU
+from config.states import PROFILE
 
 async def start(update: Update, context: ContextTypes.DEFAULT_TYPE) -> int:
     tg_user = update.effective_user
