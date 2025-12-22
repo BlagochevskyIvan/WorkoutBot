@@ -13,8 +13,8 @@ from server.routers.common_router import router as common_router
 from handlers.bot_init import create_bot_app
 from telegram.ext import Application
 
-
-from db.database import engine, Base
+from db.database import engine
+from db.models import Base
 
 
 async def init_db():

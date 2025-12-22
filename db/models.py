@@ -1,8 +1,8 @@
-from db.database import Base
 from sqlalchemy import Column, Integer, String, BigInteger, ForeignKey
 from sqlalchemy.orm import relationship
+from sqlalchemy.orm import sessionmaker, declarative_base
 
-
+Base = declarative_base()
 
 class User(Base):
     __tablename__ = "users"
@@ -17,4 +17,4 @@ class User(Base):
     
 class Exercise(Base):
     __tablename__ = "exercises"
-
+    id = Column(Integer, primary_key=True, index=True, autoincrement=True)
