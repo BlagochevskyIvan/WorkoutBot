@@ -1,6 +1,6 @@
 from sqlalchemy import Column, Integer, String, BigInteger, ForeignKey
 from sqlalchemy.orm import relationship
-from sqlalchemy.orm import sessionmaker, declarative_base
+from sqlalchemy.orm import declarative_base
 
 Base = declarative_base()
 
@@ -14,7 +14,13 @@ class User(Base):
     experience = Column(String, nullable=True)
     place = Column(String, nullable=True)
     birth_date = Column(String, nullable=True)
-    
+
+    exercises = relationship(
+        "Exercise",
+        back_populates="user",
+        cascade="all, delete-orphan"
+    )
+
 class Exercise(Base):
     __tablename__ = "exercises"
 

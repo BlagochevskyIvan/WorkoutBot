@@ -7,12 +7,14 @@ from telegram.ext import (
     ContextTypes,
 )
 
-from config.states import MAINMENU, GET_DATE, PROFILE
+from config.states import MENU, GET_DATE, PROFILE
+from db.user_crud import add_gender
 
 async def get_gender(update: Update, context: ContextTypes.DEFAULT_TYPE) -> int:
     query = update.callback_query
     await query.answer()
     gender = query.data
+    await add_gender(telegram_id=update.effective_user.id, gender=gender)
     context.user_data["gender"] = gender
     keyboard = [[InlineKeyboardButton("Менее года", callback_data='beginner'),
                  InlineKeyboardButton("1-3 года", callback_data='intermediate')],
@@ -60,6 +62,7 @@ async def get_date(update: Update, context: ContextTypes.DEFAULT_TYPE) -> int:
 
     await context.bot.send_message(
         chat_id=tg_user.id,
-        text="Дата сохранена. Ваш профиль успешно создан!"
+        text="Дата сохранена. Ваш профиль успешно создан!\nИспользуйте главное меню для навигации.",
+        keyboard = [[InlineKeyboardButton("Меню", callback_data='menu')]]
     )
-    return MAINMENU
+    return MENU

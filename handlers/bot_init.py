@@ -13,7 +13,7 @@ from config.cp_config import (
     TELEGRAM_TOKEN,
 )
 from config.logger import logger
-from config.states import MAINMENU, GET_DATE, PROFILE
+from config.states import MENU, GET_DATE, PROFILE
 from handlers.common import start
 from handlers.profile import get_date, get_gender, get_experience, get_place
 
@@ -32,7 +32,8 @@ def create_bot_app():
         entry_points=[CommandHandler("start", start)],
         states={
             # Работа основного приложения
-            MAINMENU: [
+            MENU: [
+                CallbackQueryHandler(start, pattern="^workouts$"),
             ],
             PROFILE: [
                 CallbackQueryHandler(get_gender, pattern="^(male|female)$"),
