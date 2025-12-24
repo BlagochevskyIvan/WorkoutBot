@@ -6,12 +6,12 @@ services:
     container_name: workout_bot-db-1
     restart: always
     environment:
-      POSTGRES_USER: user
+      POSTGRES_USER: postgres
       POSTGRES_PASSWORD: password
       POSTGRES_DB: db
       POSTGRES_HOST_AUTH_METHOD: trust
     healthcheck:                                  # ✅ Проверяем, что Postgres готов
-      test: ["CMD-SHELL", "pg_isready -U user -d db"]
+      test: ["CMD-SHELL", "pg_isready -U postgres -d db"]
       interval: 3s
       timeout: 5s
       retries: 10
@@ -27,11 +27,11 @@ services:
     container_name: workout_bot-app-1
     command: >
       sh -c "echo '⏳ Waiting for DB...' &&
-             until pg_isready -h db -U user -d db; do sleep 1; done &&
+             until pg_isready -h db -U postgres -d db; do sleep 1; done &&
              echo '✅ DB is ready! Starting app...' &&
              uvicorn main:app --host 0.0.0.0 --port 8000 --reload"
     environment:
-      DATABASE_URL: postgresql+asyncpg://user:password@db:5432/db
+      DATABASE_URL: postgresql+asyncpg://postgres:password@db:5432/db
     depends_on:
       db:
         condition: service_healthy                # ✅ ждём, пока healthcheck скажет "ok"
