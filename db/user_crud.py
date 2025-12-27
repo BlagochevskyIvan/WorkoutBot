@@ -59,3 +59,10 @@ async def add_place(telegram_id: int, place):
             .where(User.telegram_id == telegram_id)
         )
         await session.commit()
+
+async def get_all_users() -> list[User]:
+    """Получает всех пользователей"""
+    async with get_session() as session:
+        stmt = select(User)
+        result = await session.execute(stmt)
+        return result.scalars().all()
