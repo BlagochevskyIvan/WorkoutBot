@@ -41,18 +41,18 @@ async def menu(update: Update, context: ContextTypes.DEFAULT_TYPE) -> int:
     await query.answer()
     tg_user = update.effective_user
     keyboard = [[InlineKeyboardButton("Программы тренировок", callback_data='programs')], [InlineKeyboardButton("Профиль", callback_data='profile')]]
-    await context.bot.send_message(
-        chat_id=tg_user.id,
+    await query.edit_message_text(
         text="Главное меню. Выберите действие.",
         reply_markup=InlineKeyboardMarkup(keyboard)
         )
     return MENU
     
 async def empty_func(update: Update, context: ContextTypes.DEFAULT_TYPE) -> None:
+    query = update.callback_query
+    await query.answer()
     tg_user = update.effective_user
     keyboard = [[InlineKeyboardButton("Меню", callback_data='menu')]]
-    await context.bot.send_message(
-        chat_id=tg_user.id,
+    await query.edit_message_text(
         text="Функция заглушка. Скоро здесь будет что-то полезное!",
         reply_markup=InlineKeyboardMarkup(keyboard)
     )
