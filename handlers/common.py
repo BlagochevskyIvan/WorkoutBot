@@ -28,27 +28,30 @@ async def start(update: Update, context: ContextTypes.DEFAULT_TYPE) -> int:
             )
         return PROFILE
     else:
+        keyboard = [[InlineKeyboardButton("Мои тренировки", callback_data='workouts')]]
         await context.bot.send_message(
             chat_id=tg_user.id,
             text="Вы уже зарегистрированы в боте. Используйте меню для навигации.",
-            keyboard = [[InlineKeyboardButton("Меню", callback_data='menu')]]
+            reply_markup=InlineKeyboardMarkup(keyboard)
             )
         return MENU
 
 async def menu(update: Update, context: ContextTypes.DEFAULT_TYPE) -> int:
     tg_user = update.effective_user
+    keyboard = [[InlineKeyboardButton("Мои тренировки", callback_data='workouts')]]
     await context.bot.send_message(
         chat_id=tg_user.id,
         text="Главное меню. Выберите действие.",
-        keyboard = [[InlineKeyboardButton("Мои тренировки", callback_data='workouts')]]
+        reply_markup=InlineKeyboardMarkup(keyboard)
         )
     return MENU
     
 async def empty_func(update: Update, context: ContextTypes.DEFAULT_TYPE) -> None:
     tg_user = update.effective_user
+    keyboard = [[InlineKeyboardButton("Меню", callback_data='menu')]]
     await context.bot.send_message(
         chat_id=tg_user.id,
         text="Функция заглушка. Скоро здесь будет что-то полезное!",
-        keyboard = [[InlineKeyboardButton("Меню", callback_data='menu')]]
+        reply_markup=InlineKeyboardMarkup(keyboard)
     )
     return MENU

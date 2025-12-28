@@ -63,9 +63,10 @@ async def get_date(update: Update, context: ContextTypes.DEFAULT_TYPE) -> int:
         return GET_DATE
     await add_birth_date(telegram_id=tg_user.id, birth_date=date_str)
     context.user_data["birth_date"] = date_str
+    keyboard = [[InlineKeyboardButton("Меню", callback_data='menu')]]
     await context.bot.send_message(
         chat_id=tg_user.id,
         text="Дата сохранена. Ваш профиль успешно создан!\nИспользуйте главное меню для навигации.",
-        keyboard = [[InlineKeyboardButton("Меню", callback_data='menu')]]
+        reply_markup=InlineKeyboardMarkup(keyboard)
     )
     return MENU
