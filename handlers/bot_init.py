@@ -14,8 +14,9 @@ from config.cp_config import (
 )
 from config.logger import logger
 from config.states import MENU, GET_DATE, PROFILE
-from handlers.common import start
+from handlers.common import start, menu, empty_func
 from handlers.profile import get_date, get_gender, get_experience, get_place
+from handlers.programs import list_programs
 
 
 def create_bot_app():
@@ -33,7 +34,9 @@ def create_bot_app():
         states={
             # Работа основного приложения
             MENU: [
-                CallbackQueryHandler(start, pattern="^workouts$"),
+                CallbackQueryHandler(menu, pattern="^menu$"),
+                CallbackQueryHandler(list_programs, pattern="^programs$"),
+                CallbackQueryHandler(empty_func, pattern="^profile$"),
             ],
             PROFILE: [
                 CallbackQueryHandler(get_gender, pattern="^(male|female)$"),

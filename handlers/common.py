@@ -28,7 +28,7 @@ async def start(update: Update, context: ContextTypes.DEFAULT_TYPE) -> int:
             )
         return PROFILE
     else:
-        keyboard = [[InlineKeyboardButton("Мои тренировки", callback_data='workouts')]]
+        keyboard = [[InlineKeyboardButton("Программы тренировок", callback_data='programs')]]
         await context.bot.send_message(
             chat_id=tg_user.id,
             text="Вы уже зарегистрированы в боте. Используйте меню для навигации.",
@@ -37,8 +37,10 @@ async def start(update: Update, context: ContextTypes.DEFAULT_TYPE) -> int:
         return MENU
 
 async def menu(update: Update, context: ContextTypes.DEFAULT_TYPE) -> int:
+    query = update.callback_query
+    await query.answer()
     tg_user = update.effective_user
-    keyboard = [[InlineKeyboardButton("Мои тренировки", callback_data='workouts')]]
+    keyboard = [[InlineKeyboardButton("Программы тренировок", callback_data='programs')], [InlineKeyboardButton("Профиль", callback_data='profile')]]
     await context.bot.send_message(
         chat_id=tg_user.id,
         text="Главное меню. Выберите действие.",
