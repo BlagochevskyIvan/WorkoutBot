@@ -4,3 +4,4 @@ __pycache__
 *.sql
 .vscode
 *.pyc
+bot_cache
