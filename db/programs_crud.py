@@ -35,5 +35,7 @@ async def get_programs(telegram_id: int) -> list[Program]:
             return []
 
         return user.programs
+
+
     
     
