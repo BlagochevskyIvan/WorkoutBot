@@ -53,4 +53,4 @@ async def create_program_handler(update: Update, context: ContextTypes.DEFAULT_T
         chat_id=tg_user.id,
         text=f"Программа '{program_name}' успешно создана!",
     )
-    return MENU
+    return 
