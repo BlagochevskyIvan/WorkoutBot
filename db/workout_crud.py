@@ -1,7 +1,6 @@
 from db.database import get_session
-from db.models import User, Program, Workout
-from sqlalchemy import select, update
-from typing import Optional
+from db.models import Program, Workout
+from sqlalchemy import select
 from sqlalchemy.orm import selectinload
 
 async def create_workout(id: int, name: str) -> Workout:
