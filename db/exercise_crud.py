@@ -8,7 +8,7 @@ async def create_exercise(id: int, name: str) -> Exercise:
         stmt = select(Workout).where(Workout.id == id)
         result = await session.execute(stmt)
         workout = result.scalars().first()
-        
+
         if not workout:
             raise ValueError("Workout not found")
 
@@ -34,4 +34,17 @@ async def get_exercises(id: int) -> list[Exercise]:
             return []
 
         return workout.exercises
-            
+        
+async def delete_exercise(exercise_id: int) -> None:
+    async with get_session() as session:
+        exercise = (
+            await session.execute(
+                select(Exercise).where(Exercise.id == exercise_id)
+            )
+        ).scalars().first()
+
+        if not exercise:
+            return
+
+        await session.delete(exercise)
+        await session.commit()

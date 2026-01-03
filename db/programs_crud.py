@@ -35,6 +35,21 @@ async def get_programs(telegram_id: int) -> list[Program]:
             return []
 
         return user.programs
+    
+async def delete_program(program_id: int) -> None:
+    async with get_session() as session:
+        program = (
+            await session.execute(
+                select(Program).where(Program.id == program_id)
+            )
+        ).scalars().first()
+
+        if not program:
+            return
+
+        await session.delete(program)
+        await session.commit()
+
 
 
     

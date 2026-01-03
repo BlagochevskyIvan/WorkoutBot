@@ -34,3 +34,17 @@ async def get_workouts(id: int) -> list[Workout]:
             return []
 
         return program.workouts
+    
+async def delete_workout(workout_id: int) -> None:
+    async with get_session() as session:
+        workout = (
+            await session.execute(
+                select(Workout).where(Workout.id == workout_id)
+            )
+        ).scalars().first()
+
+        if not workout:
+            return
+
+        await session.delete(workout)
+        await session.commit()
