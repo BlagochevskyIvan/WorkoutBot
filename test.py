@@ -8,5 +8,5 @@ response = client.responses.create(
     instructions="Говори, как будто бы тот, кто задает тебе вопрос умственно отсталый. Отвечай просто и понятно. И сильно груби",
     input="Что такое питон"
 )
-
+# 
 print(response.output_text)
