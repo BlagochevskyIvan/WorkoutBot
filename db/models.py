@@ -29,7 +29,7 @@ class Program(Base):
     name = Column(String, nullable=False)
     description = Column(String, nullable=True)
     owner_id = Column(Integer, ForeignKey("users.id"), nullable=True)
-    is_template = Column(Boolean, default=False)
+    is_template = Column(Boolean, nullable=False, default=False)
 
     owner = relationship("User", back_populates="programs")
     workouts = relationship(
