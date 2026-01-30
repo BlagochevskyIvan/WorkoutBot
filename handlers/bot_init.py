@@ -46,7 +46,6 @@ def create_bot_app():
             ],
             PROGRAMM: [
                 CallbackQueryHandler(list_programs, pattern="^programs$"),
-                CallbackQueryHandler()
             ],
             # Получение даты рождения
             GET_DATE: [MessageHandler(filters.TEXT & ~filters.COMMAND, get_date)],
