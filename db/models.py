@@ -93,7 +93,7 @@ class FactExercise(Base):
     
     id = Column(Integer, primary_key=True, autoincrement=True)
     name = Column(String, nullable=False)
-    fact_workout_id = Column(Integer, ForeignKey("fact_workout.id"), nullable=False)
+    fact_workout_id = Column(Integer, ForeignKey("fact_workouts.id"), nullable=False)
 
     fact_workout = relationship("FactWorkout", back_populates="fact_exercises")
     fact_sets = relationship("FactSet", back_populates="fact_exercise", cascade="all, delete-orphan")
@@ -103,7 +103,7 @@ class FactSet(Base):
 
     id = Column(Integer, primary_key=True, autoincrement=True)
     reps = Column(Integer)
-    fact_exercise_id = Column(Integer, ForeignKey("fact_exercise.id"), nullable=False)
+    fact_exercise_id = Column(Integer, ForeignKey("fact_exercises.id"), nullable=False)
 
     fact_exercise = relationship("FactExrcise", back_populates="fact_sets")
 
