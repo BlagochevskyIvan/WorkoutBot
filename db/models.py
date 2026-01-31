@@ -66,11 +66,44 @@ class Exercise(Base):
         cascade="all, delete-orphan"
     )
 
-class Repetition(Base):
-    __timetable__ = "repetitions" 
+class Set(Base):
+    __tablename__ = "sets" 
 
     id = Column(Integer, primary_key=True, autoincrement=True)
     exercise_id = Column(Integer, ForeignKey("exercises.id"), nullable=False)
     reps = Column(Integer, nullable=False)
     
-    exercise = relationship("Exercise", back_populates="repetitions")
+    exercise = relationship("Exercise", back_populates="sets")
+
+class FactWorkout(Base):
+    __tablename__ = "fact_workouts"
+
+    id = Column(Integer, primary_key=True, autoincrement=True)
+    user_id = Column(Integer, ForeignKey("users.id"))
+
+    user = relationship("User", back_populates="fact_workouts")
+    fact_exercises = relationship(
+        "FactExercise",
+        back_populates="fact_workout",
+        cascade="all, delete-orphan"
+    )
+
+class FactExercise(Base):
+    __tablename__ = "fact_exercises"
+    
+    id = Column(Integer, primary_key=True, autoincrement=True)
+    name = Column(String, nullable=False)
+    fact_workout_id = Column(Integer, ForeignKey("fact_workout.id"), nullable=False)
+
+    fact_workout = relationship("FactWorkout", back_populates="fact_exercises")
+    fact_sets = relationship("FactSet", back_populates="fact_exercise", cascade="all, delete-orphan")
+
+class FactSet(Base):
+    __tablename__ = "fact_sets"
+
+    id = Column(Integer, primary_key=True, autoincrement=True)
+    reps = Column(Integer)
+    fact_exercise_id = Column(Integer, ForeignKey("fact_exercise.id"), nullable=False)
+
+    fact_exercise = relationship("FactExrcise", back_populates="fact_sets")
+

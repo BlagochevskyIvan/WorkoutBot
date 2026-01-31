@@ -31,6 +31,7 @@ def create_bot_app():
     logger.info("Запуск тг бота")
     conv_handler = ConversationHandler(
         entry_points=[CommandHandler("start", start)],
+        per_message=True,
         states={
             # Работа основного приложения
             MENU: [
