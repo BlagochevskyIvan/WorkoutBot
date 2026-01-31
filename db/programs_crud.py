@@ -13,7 +13,7 @@ async def create_program(telegram_id: int, name: str) -> Program:
         if not user:
             raise ValueError("User not found")
 
-        program = Program(name=name, owner=user, is_template=False)
+        program = Program(name=name, owner=user, is_template=False, owner_id=user.id)
         session.add(program)
         await session.commit()
         await session.refresh(program)

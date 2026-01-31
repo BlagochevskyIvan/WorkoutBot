@@ -22,6 +22,9 @@ class User(Base):
         cascade="all, delete-orphan"
     )
 
+    fact_workouts = relationship("FactWorkout", back_populates="user", cascade="all, delete-orphan")
+    # добавить в факт ворк отношение и добить тут
+
 class Program(Base):
     __tablename__ = "programs"
 
@@ -60,8 +63,8 @@ class Exercise(Base):
     name = Column(String, nullable=False)
 
     workout = relationship("Workout", back_populates="exercises")
-    reps = relationship(
-        "Repetition",
+    sets = relationship(
+        "Set",
         back_populates="exercise",
         cascade="all, delete-orphan"
     )
@@ -80,6 +83,8 @@ class FactWorkout(Base):
 
     id = Column(Integer, primary_key=True, autoincrement=True)
     user_id = Column(Integer, ForeignKey("users.id"))
+    date = Column(String, nullable=False)
+
 
     user = relationship("User", back_populates="fact_workouts")
     fact_exercises = relationship(
@@ -105,5 +110,5 @@ class FactSet(Base):
     reps = Column(Integer)
     fact_exercise_id = Column(Integer, ForeignKey("fact_exercises.id"), nullable=False)
 
-    fact_exercise = relationship("FactExrcise", back_populates="fact_sets")
+    fact_exercise = relationship("FactExercise", back_populates="fact_sets")
 
