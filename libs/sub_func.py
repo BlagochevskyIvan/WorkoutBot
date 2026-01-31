@@ -1,4 +1,5 @@
 from datetime import datetime
+from time import strftime, localtime
 
 # Проверка корректности даты в профиле
 def validate_date(date_str: str) -> bool:
@@ -7,3 +8,8 @@ def validate_date(date_str: str) -> bool:
         return True
     except ValueError:
         return False
+    
+# Берём нынешнюю дату
+def date_now():
+    time = strftime("%d/%m/%y",localtime())
+    return time
