@@ -3,9 +3,9 @@ from db.models import Program, Workout
 from sqlalchemy import select
 from sqlalchemy.orm import selectinload
 
-async def create_workout(id: int, name: str) -> Workout:
+async def create_workout(program_id: int, name: str) -> Workout:
     async with get_session() as session:
-        stmt = select(Program).where(Program.id == id)
+        stmt = select(Program).where(Program.id == program_id)
         result = await session.execute(stmt)
         program = result.scalars().first()
 

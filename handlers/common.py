@@ -28,7 +28,7 @@ async def start(update: Update, context: ContextTypes.DEFAULT_TYPE) -> int:
             )
         return PROFILE
     else:
-        keyboard = [[InlineKeyboardButton("Программы тренировок", callback_data='programs')]]
+        keyboard = [[InlineKeyboardButton("Программы тренировок", callback_data='programs')], [InlineKeyboardButton("Профиль", callback_data='profile')]]
         await context.bot.send_message(
             chat_id=tg_user.id,
             text="Вы уже зарегистрированы в боте. Используйте меню для навигации.",
