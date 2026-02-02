@@ -9,8 +9,10 @@ from config.logger import logger
 async def list_workouts(update: Update, context: ContextTypes.DEFAULT_TYPE) -> None:
     query = update.callback_query
     await query.answer()
-    program_id = int(query.data.split("_")[1])
-    context.user_data["program_id"] = program_id
+    if str(query.data) != "workouts":
+        program_id = int(query.data.split("_")[1])
+        context.user_data["program_id"] = program_id
+    program_id = context.user_data["program_id"]
     workouts = await get_workouts(program_id)
     keyboard = []
     if not workouts:
@@ -36,7 +38,7 @@ async def list_workouts(update: Update, context: ContextTypes.DEFAULT_TYPE) -> N
     keyboard.extend(
         [
             [InlineKeyboardButton(text="Добавить тренировку", callback_data="create_workout")],
-            [InlineKeyboardButton(text="К программам", callback_data="menu")]
+            [InlineKeyboardButton(text="К программам", callback_data="programs")]
         ]
     )
     await query.edit_message_text(
@@ -62,7 +64,7 @@ async def create_workout_handler(update: Update, context: ContextTypes.DEFAULT_T
     context.user_data["workout_id"] = workout.id
     keyboard = [
         [InlineKeyboardButton(text="Добавить упражнение", callback_data="create_exercise")],
-        [InlineKeyboardButton(text="К программе", callback_data="{program_id}")],
+        [InlineKeyboardButton(text="К тренировкам", callback_data="workouts")],
         [InlineKeyboardButton(text="Меню", callback_data="menu")]
         ]
     await context.bot.send_message(
