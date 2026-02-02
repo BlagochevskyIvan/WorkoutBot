@@ -1,30 +1,30 @@
 from db.database import get_session
-from db.models import Exercise, Repetition
+from db.models import Exercise, Set
 from sqlalchemy import select
 from sqlalchemy.orm import selectinload
 
-async def create_repetition(id: int, name: str) -> Exercise:
+async def create_set(exercise_id: int, name: str) -> Exercise:
     async with get_session() as session:
-        stmt = select(Exercise).where(Exercise.id == id)
+        stmt = select(Exercise).where(Exercise.id == exercise_id)
         result = await session.execute(stmt)
         exercise = result.scalars().first()
 
         if not exercise:
-            raise ValueError("Workout not found")
+            raise ValueError("Exercise not found")
 
-        repetition = Repetition(exercise=exercise)
-        session.add(repetition)
+        set = Set(exercise=exercise)
+        session.add(set)
         await session.commit()
-        await session.refresh(repetition)
+        await session.refresh(set)
 
-        return repetition
+        return set
     
-async def get_repetitions(id: int) -> list[Repetition]:
+async def get_sets(id: int) -> list[Set]:
     async with get_session() as session:
         stmt = (
             select(Exercise)
             .where(Exercise.id == id)
-            .options(selectinload(Exercise.exercises))
+            .options(selectinload(Exercise.sets))
         )
 
         result = await session.execute(stmt)
@@ -33,18 +33,18 @@ async def get_repetitions(id: int) -> list[Repetition]:
         if not exercise:
             return []
 
-        return exercise.repetitions
+        return exercise.sets
         
-async def delete_repetition(repetition_id: int) -> None:
+async def delete_set(set_id: int) -> None:
     async with get_session() as session:
-        repetition = (
+        set = (
             await session.execute(
-                select(Repetition).where(Repetition.id == repetition_id)
+                select(Set).where(Set.id == set_id)
             )
         ).scalars().first()
 
-        if not repetition:
+        if not set:
             return
 
-        await session.delete(repetition)
+        await session.delete(set)
         await session.commit()

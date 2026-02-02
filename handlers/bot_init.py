@@ -46,6 +46,8 @@ def create_bot_app():
                 CallbackQueryHandler(list_exercises, pattern="^workout_\d+$"),
                 CallbackQueryHandler(list_exercises, pattern="^exercises$"),
                 CallbackQueryHandler(get_exercise_name, pattern="^create_exercise$"),
+                CallbackQueryHandler(list_exercises, pattern="^exercise_\d+$"),
+                CallbackQueryHandler(list_exercises, pattern="^sets$"),
             ],
             PROFILE: [
                 CallbackQueryHandler(get_gender, pattern="^(male|female)$"),
