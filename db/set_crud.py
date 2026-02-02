@@ -3,7 +3,7 @@ from db.models import Exercise, Set
 from sqlalchemy import select
 from sqlalchemy.orm import selectinload
 
-async def create_set(exercise_id: int, name: str) -> Exercise:
+async def create_set(exercise_id: int, weight: int, reps: int) -> Exercise:
     async with get_session() as session:
         stmt = select(Exercise).where(Exercise.id == exercise_id)
         result = await session.execute(stmt)
@@ -12,7 +12,7 @@ async def create_set(exercise_id: int, name: str) -> Exercise:
         if not exercise:
             raise ValueError("Exercise not found")
 
-        set = Set(exercise=exercise)
+        set = Set(weight=weight, reps=reps, exercise=exercise)
         session.add(set)
         await session.commit()
         await session.refresh(set)

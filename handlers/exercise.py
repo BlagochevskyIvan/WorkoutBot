@@ -61,7 +61,6 @@ async def get_exercise_name(update: Update, context: ContextTypes.DEFAULT_TYPE) 
 async def create_exercise_handler(update: Update, context: ContextTypes.DEFAULT_TYPE) -> None:
     tg_user = update.effective_user
     workout_id = context.user_data.get("workout_id")
-    logger.info(workout_id)
 
     exercise_name = update.message.text
     exercise = await create_exercise(workout_id=workout_id, name=exercise_name)

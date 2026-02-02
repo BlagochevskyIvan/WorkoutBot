@@ -13,12 +13,13 @@ from config.cp_config import (
     TELEGRAM_TOKEN,
 )
 from config.logger import logger
-from config.states import MENU, GET_DATE, PROFILE, GET_PROGRAMM_NAME, GET_WORKOUT_NAME, GET_EXERCISE_NAME
+from config.states import MENU, GET_DATE, PROFILE, GET_PROGRAMM_NAME, GET_WORKOUT_NAME, GET_EXERCISE_NAME, GET_SET_WEIGHT, GET_SET_REPS
 from handlers.common import start, menu, empty_func
 from handlers.profile import get_date, get_gender, get_experience, get_place
 from handlers.programs import list_programs, get_program_name, create_program_handler
 from handlers.workout import list_workouts, get_workout_name, create_workout_handler
 from handlers.exercise import list_exercises, get_exercise_name, create_exercise_handler
+from handlers.set import list_sets, get_set_weight, get_set_reps, create_set_handler
 
 
 def create_bot_app():
@@ -46,8 +47,9 @@ def create_bot_app():
                 CallbackQueryHandler(list_exercises, pattern="^workout_\d+$"),
                 CallbackQueryHandler(list_exercises, pattern="^exercises$"),
                 CallbackQueryHandler(get_exercise_name, pattern="^create_exercise$"),
-                CallbackQueryHandler(list_exercises, pattern="^exercise_\d+$"),
-                CallbackQueryHandler(list_exercises, pattern="^sets$"),
+                CallbackQueryHandler(list_sets, pattern="^exercise_\d+$"),
+                CallbackQueryHandler(list_sets, pattern="^sets$"),
+                CallbackQueryHandler(get_set_weight, pattern="^create_set$")
             ],
             PROFILE: [
                 CallbackQueryHandler(get_gender, pattern="^(male|female)$"),
@@ -57,8 +59,9 @@ def create_bot_app():
             GET_DATE: [MessageHandler(filters.TEXT & ~filters.COMMAND, get_date)],
             GET_PROGRAMM_NAME: [MessageHandler(filters.TEXT & ~filters.COMMAND, create_program_handler)],
             GET_WORKOUT_NAME: [MessageHandler(filters.TEXT & ~filters.COMMAND, create_workout_handler)],
-            GET_EXERCISE_NAME: [MessageHandler(filters.TEXT & ~filters.COMMAND, create_exercise_handler)]
-
+            GET_EXERCISE_NAME: [MessageHandler(filters.TEXT & ~filters.COMMAND, create_exercise_handler)],
+            GET_SET_WEIGHT: [MessageHandler(filters.TEXT & ~filters.COMMAND, get_set_reps)],
+            GET_SET_REPS: [MessageHandler(filters.TEXT & ~filters.COMMAND, create_set_handler)]
         },
         fallbacks=[CommandHandler("start", start)],
         name="main_conversation",
