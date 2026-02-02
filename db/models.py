@@ -74,7 +74,8 @@ class Set(Base):
 
     id = Column(Integer, primary_key=True, autoincrement=True)
     exercise_id = Column(Integer, ForeignKey("exercises.id"), nullable=False)
-    reps = Column(Integer, nullable=False)
+    weight = Column(Integer, nullable=True)
+    reps = Column(Integer, nullable=True)
     
     exercise = relationship("Exercise", back_populates="sets")
 
