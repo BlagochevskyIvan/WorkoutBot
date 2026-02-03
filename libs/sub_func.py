@@ -1,4 +1,5 @@
 from datetime import datetime
+from math import isfinite
 from time import strftime, localtime
 
 # Проверка корректности даты в профиле
@@ -13,3 +14,10 @@ def validate_date(date_str: str) -> bool:
 def date_now():
     time = strftime("%d/%m/%y",localtime())
     return time
+
+def validate_num(num: str) -> bool:
+    try:
+        x = float(s)
+        return x >= 0 and isfinite(x)
+    except ValueError:
+        return False

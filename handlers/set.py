@@ -2,6 +2,7 @@ from telegram import Update
 from telegram.ext import ContextTypes
 from telegram import InlineKeyboardButton, InlineKeyboardMarkup
 from db.set_crud import get_sets, create_set
+from libs.sub_func import validate_num
 from config.states import MENU, GET_SET_WEIGHT, GET_SET_REPS
 from config.logger import logger
 
@@ -60,29 +61,44 @@ async def get_set_weight(update: Update, context: ContextTypes.DEFAULT_TYPE) -> 
     return GET_SET_WEIGHT
 
 async def get_set_reps(update: Update, context: ContextTypes.DEFAULT_TYPE) -> int:
-    context.user_data["set_weight"] = int(update.message.text)
-    await context.bot.send_message(
-        chat_id=update.effective_chat.id,
-        text="Введите количество повторений подхода:",
-    )
-    return GET_SET_REPS
+    weight = update.message.text
+    if validate_num(weight):
+        context.user_data["set_weight"] = weight
+        await context.bot.send_message(
+            chat_id=update.effective_chat.id,
+            text="Введите количество повторений подхода:",
+        )
+        return GET_SET_REPS
+    else:
+        await context.bot.send_message(
+            chat_id=update.effective_chat.id,
+            text="Введите вес должен быть числом\nВведите вес подхода:",
+        )
+        return GET_SET_WEIGHT
 
 async def create_set_handler(update: Update, context: ContextTypes.DEFAULT_TYPE) -> None:
     tg_user = update.effective_user
-    exercise_id = context.user_data.get("exercise_id")
-
-    set_weight = context.user_data.get("set_weight")
-    set_reps = int(update.message.text)
-    set = await create_set(exercise_id=exercise_id, weight=set_weight, reps=set_reps)
-    context.user_data["set_id"] = set.id
-    keyboard = [
-        [InlineKeyboardButton(text="Изменить Подход", callback_data="create_exercise")],
-        [InlineKeyboardButton(text="К подходам", callback_data="sets")],
-        [InlineKeyboardButton(text="Меню", callback_data="menu")]
-        ]
-    await context.bot.send_message(
-        chat_id=tg_user.id,
-        text=f"подход успешно создан!",
-        reply_markup=InlineKeyboardMarkup(keyboard)
-    )
-    return MENU
+    reps = update.message.text
+    if validate_num(reps):
+        exercise_id = context.user_data.get("exercise_id")
+        set_weight = context.user_data.get("set_weight")
+        # set_reps = update.message.text
+        set = await create_set(exercise_id=exercise_id, weight=set_weight, reps=reps)
+        context.user_data["set_id"] = set.id
+        keyboard = [
+            [InlineKeyboardButton(text="Изменить Подход", callback_data="create_exercise")],
+            [InlineKeyboardButton(text="К подходам", callback_data="sets")],
+            [InlineKeyboardButton(text="Меню", callback_data="menu")]
+            ]
+        await context.bot.send_message(
+            chat_id=tg_user.id,
+            text=f"подход успешно создан!",
+            reply_markup=InlineKeyboardMarkup(keyboard)
+        )
+        return MENU
+    else:
+        await context.bot.send_message(
+            chat_id=update.effective_chat.id,
+            text="Повторения должены быть числом\nВведите количество повторений:",
+        )
+        return GET_SET_REPS
