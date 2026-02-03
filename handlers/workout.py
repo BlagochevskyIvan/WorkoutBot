@@ -18,12 +18,12 @@ async def list_workouts(update: Update, context: ContextTypes.DEFAULT_TYPE) -> N
         keyboard.extend(
             [
                 [InlineKeyboardButton(text="Добавить тренировку", callback_data="create_workout")],
-                [InlineKeyboardButton(text="К программам", callback_data="programs")],
+                [InlineKeyboardButton(text="Назад к программам", callback_data="programs")],
                 [InlineKeyboardButton(text="Меню", callback_data="menu")]
             ]
         )
         await query.edit_message_text(
-            text="В этой программе пока нет тренировок",
+            text="В этой программе пока пусто\nДобавьте тренировки",
             reply_markup=InlineKeyboardMarkup(keyboard)
         )
         return MENU
@@ -37,7 +37,7 @@ async def list_workouts(update: Update, context: ContextTypes.DEFAULT_TYPE) -> N
     keyboard.extend(
         [
             [InlineKeyboardButton(text="Добавить тренировку", callback_data="create_workout")],
-            [InlineKeyboardButton(text="К программам", callback_data="programs")]
+            [InlineKeyboardButton(text="Назад к программам", callback_data="programs")]
         ]
     )
     await query.edit_message_text(
@@ -63,7 +63,7 @@ async def create_workout_handler(update: Update, context: ContextTypes.DEFAULT_T
     context.user_data["workout_id"] = workout.id
     keyboard = [
         [InlineKeyboardButton(text="Добавить упражнение", callback_data="create_exercise")],
-        [InlineKeyboardButton(text="К тренировкам", callback_data="workouts")],
+        [InlineKeyboardButton(text="Назад к тренировкам", callback_data="workouts")],
         [InlineKeyboardButton(text="Меню", callback_data="menu")]
         ]
     await context.bot.send_message(

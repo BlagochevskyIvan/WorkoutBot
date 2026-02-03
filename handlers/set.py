@@ -19,12 +19,12 @@ async def list_sets(update: Update, context: ContextTypes.DEFAULT_TYPE) -> None:
         keyboard.extend(
             [
                 [InlineKeyboardButton(text="Добавить подход", callback_data="create_set")],
-                [InlineKeyboardButton(text="К упражнениям", callback_data="exercises")],
+                [InlineKeyboardButton(text="Назад к упражнениям", callback_data="exercises")],
                 [InlineKeyboardButton(text="Меню", callback_data="menu")]
             ]
         )
         await query.edit_message_text(
-            text="В этом упржнении пока нет подходов",
+            text="В этом упржнении пока нет подходов\nВы можете добавить их",
             reply_markup=InlineKeyboardMarkup(keyboard)
         )
         return MENU
@@ -41,7 +41,7 @@ async def list_sets(update: Update, context: ContextTypes.DEFAULT_TYPE) -> None:
     keyboard.extend(
         [
             [InlineKeyboardButton(text="Добавить подход", callback_data="create_set")],
-            [InlineKeyboardButton(text="К упражнениям", callback_data="exercises")],
+            [InlineKeyboardButton(text="Назад к упражнениям", callback_data="exercises")],
             [InlineKeyboardButton(text="Меню", callback_data="menu")]
         ]
     )
@@ -87,7 +87,7 @@ async def create_set_handler(update: Update, context: ContextTypes.DEFAULT_TYPE)
         context.user_data["set_id"] = set.id
         keyboard = [
             [InlineKeyboardButton(text="Изменить Подход", callback_data="create_exercise")],
-            [InlineKeyboardButton(text="К подходам", callback_data="sets")],
+            [InlineKeyboardButton(text="Назад к подходам", callback_data="sets")],
             [InlineKeyboardButton(text="Меню", callback_data="menu")]
             ]
         await context.bot.send_message(

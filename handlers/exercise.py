@@ -18,12 +18,12 @@ async def list_exercises(update: Update, context: ContextTypes.DEFAULT_TYPE) -> 
         keyboard.extend(
             [
                 [InlineKeyboardButton(text="Добавить упражнение", callback_data="create_exercise")],
-                [InlineKeyboardButton(text="К тренировкам", callback_data="workouts")],
+                [InlineKeyboardButton(text="Назад к тренировкам", callback_data="workouts")],
                 [InlineKeyboardButton(text="Меню", callback_data="menu")]
             ]
         )
         await query.edit_message_text(
-            text="В этой тренировке пока нет упражненеий",
+            text="В этой тренировке пока пусто\nДобавьте упражнения",
             reply_markup=InlineKeyboardMarkup(keyboard)
         )
         return MENU
@@ -40,7 +40,7 @@ async def list_exercises(update: Update, context: ContextTypes.DEFAULT_TYPE) -> 
     keyboard.extend(
         [
             [InlineKeyboardButton(text="Добавить упражнение", callback_data="create_exercise")],
-            [InlineKeyboardButton(text="К тренировкам", callback_data="workouts")],
+            [InlineKeyboardButton(text="Назад к тренировкам", callback_data="workouts")],
             [InlineKeyboardButton(text="Меню", callback_data="menu")]
         ]
     )
@@ -67,8 +67,8 @@ async def create_exercise_handler(update: Update, context: ContextTypes.DEFAULT_
     exercise = await create_exercise(workout_id=workout_id, name=exercise_name)
     context.user_data["exercise_id"] = exercise.id
     keyboard = [
-        [InlineKeyboardButton(text="Добавить Подход", callback_data="create_exercise")],
-        [InlineKeyboardButton(text="К упражнениям", callback_data="exercises")],
+        [InlineKeyboardButton(text="Добавить подход", callback_data="create_exercise")],
+        [InlineKeyboardButton(text="Назад к упражнениям", callback_data="exercises")],
         [InlineKeyboardButton(text="Меню", callback_data="menu")]
         ]
     await context.bot.send_message(
