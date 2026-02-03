@@ -1,9 +1,6 @@
 from telegram import Update
 from telegram.ext import ContextTypes
 from telegram import InlineKeyboardButton, InlineKeyboardMarkup
-from db.programs_crud import get_programs, create_program
-from db.workout_crud import get_workouts
-from db.exercise_crud import get_exercises, create_exercise
 from db.set_crud import get_sets, create_set
 from config.states import MENU, GET_SET_WEIGHT, GET_SET_REPS
 from config.logger import logger
@@ -31,12 +28,12 @@ async def list_sets(update: Update, context: ContextTypes.DEFAULT_TYPE) -> None:
         )
         return MENU
     
-    set_num = 0
+    num = 0
     for set in sets:
-        set_num += 1
+        num += 1
         keyboard.extend(
             [
-                [InlineKeyboardButton(text=f"{set_num}. {set.weight}кг х {set.reps}", callback_data=f"set_{set.id}")]
+                [InlineKeyboardButton(text=f"{num}. {set.weight}кг х {set.reps}", callback_data=f"set_{set.id}")]
             ]
         )
 

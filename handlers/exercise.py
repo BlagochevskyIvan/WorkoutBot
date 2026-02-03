@@ -1,8 +1,6 @@
 from telegram import Update
 from telegram.ext import ContextTypes
 from telegram import InlineKeyboardButton, InlineKeyboardMarkup
-from db.programs_crud import get_programs, create_program
-from db.workout_crud import get_workouts
 from db.exercise_crud import get_exercises, create_exercise
 from config.states import MENU, GET_EXERCISE_NAME
 from config.logger import logger
@@ -30,12 +28,15 @@ async def list_exercises(update: Update, context: ContextTypes.DEFAULT_TYPE) -> 
         )
         return MENU
 
-    keyboard.extend(
-        [
-            [InlineKeyboardButton(text=exercise.name, callback_data=f"exercise_{exercise.id}")]
-            for exercise in exercises
-        ]
-    )
+    num = 0
+    for exercise in exercises:
+        num += 1
+        keyboard.extend(
+            [
+                [InlineKeyboardButton(text=f"{num}. {exercise.name}", callback_data=f"exercise_{exercise.id}")]
+            ]
+        )
+
     keyboard.extend(
         [
             [InlineKeyboardButton(text="Добавить упражнение", callback_data="create_exercise")],

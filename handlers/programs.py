@@ -2,7 +2,6 @@ from telegram import Update
 from telegram.ext import ContextTypes
 from telegram import InlineKeyboardButton, InlineKeyboardMarkup
 from db.programs_crud import get_programs, create_program
-from db.workout_crud import get_workouts
 from config.states import MENU, GET_PROGRAMM_NAME
 from config.logger import logger
 
