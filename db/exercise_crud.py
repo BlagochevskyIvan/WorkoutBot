@@ -19,11 +19,11 @@ async def create_exercise(workout_id: int, name: str) -> Exercise:
 
         return exercise
 
-async def get_exercises(id: int) -> list[Exercise]:
+async def get_exercises(workout_id: int) -> list[Exercise]:
     async with get_session() as session:
         stmt = (
             select(Workout)
-            .where(Workout.id == id)
+            .where(Workout.id == workout_id)
             .options(selectinload(Workout.exercises))
         )
 

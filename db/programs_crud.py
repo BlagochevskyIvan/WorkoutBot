@@ -1,7 +1,6 @@
 from db.database import get_session
 from db.models import User, Program
 from sqlalchemy import select, update
-from typing import Optional
 from sqlalchemy.orm import selectinload
 
 async def create_program(telegram_id: int, name: str) -> Program:

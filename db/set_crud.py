@@ -19,11 +19,11 @@ async def create_set(exercise_id: int, weight: int, reps: int) -> Exercise:
 
         return set
     
-async def get_sets(id: int) -> list[Set]:
+async def get_sets(exercise_id: int) -> list[Set]:
     async with get_session() as session:
         stmt = (
             select(Exercise)
-            .where(Exercise.id == id)
+            .where(Exercise.id == exercise_id)
             .options(selectinload(Exercise.sets))
         )
 
