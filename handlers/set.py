@@ -2,6 +2,7 @@ from telegram import Update
 from telegram.ext import ContextTypes
 from telegram import InlineKeyboardButton, InlineKeyboardMarkup
 from db.set_crud import get_sets, create_set, get_set
+from db.exercise_crud import get_exercise
 from libs.sub_func import validate_num
 from config.states import MENU, GET_SET_WEIGHT, GET_SET_REPS
 from re import match
@@ -13,6 +14,7 @@ async def list_sets(update: Update, context: ContextTypes.DEFAULT_TYPE) -> None:
         exercise_id = int(query.data.split("_")[1])
         context.user_data["exercise_id"] = exercise_id
     exercise_id = context.user_data["exercise_id"]
+    exercise = await get_exercise(exercise_id=exercise_id)
     sets = await get_sets(exercise_id)
     keyboard = []
     if not sets:
@@ -24,7 +26,7 @@ async def list_sets(update: Update, context: ContextTypes.DEFAULT_TYPE) -> None:
             ]
         )
         await query.edit_message_text(
-            text="В этом упржнении пока нет подходов\nВы можете добавить их",
+            text=f"{exercise.name}\nВ этом упржнении пока нет подходов\nВы можете добавить их",
             reply_markup=InlineKeyboardMarkup(keyboard)
         )
         return MENU
@@ -46,7 +48,7 @@ async def list_sets(update: Update, context: ContextTypes.DEFAULT_TYPE) -> None:
         ]
     )
     await query.edit_message_text(
-        text="Подходы в упражнении",
+        text=f"{exercise.name}",
         reply_markup=InlineKeyboardMarkup(keyboard)
     )
     return MENU

@@ -2,6 +2,7 @@ from db.database import get_session
 from db.models import Workout, Exercise
 from sqlalchemy import select
 from sqlalchemy.orm import selectinload
+from typing import Optional
 
 async def create_exercise(workout_id: int, name: str) -> Exercise:
     async with get_session() as session:
@@ -48,3 +49,12 @@ async def delete_exercise(exercise_id: int) -> None:
 
         await session.delete(exercise)
         await session.commit()
+
+async def get_exercise(exercise_id: int) -> Optional[Exercise]:
+    async with get_session() as session:
+        exercise = (
+            await session.execute(
+                select(Exercise).where(Exercise.id == exercise_id)
+            )
+        ).scalars().first()
+    return exercise
