@@ -1,10 +1,10 @@
 from telegram import Update
 from telegram.ext import ContextTypes
 from telegram import InlineKeyboardButton, InlineKeyboardMarkup
-from db.set_crud import get_sets, create_set
+from db.set_crud import get_sets, create_set, get_set
 from libs.sub_func import validate_num
 from config.states import MENU, GET_SET_WEIGHT, GET_SET_REPS
-from config.logger import logger
+from re import match
 
 async def list_sets(update: Update, context: ContextTypes.DEFAULT_TYPE) -> None:
     query = update.callback_query
@@ -34,7 +34,7 @@ async def list_sets(update: Update, context: ContextTypes.DEFAULT_TYPE) -> None:
         num += 1
         keyboard.extend(
             [
-                [InlineKeyboardButton(text=f"{num}. {set.weight}кг х {set.reps}", callback_data=f"set_{set.id}")]
+                [InlineKeyboardButton(text=f"{num}. {set.weight}кг х {set.reps}", callback_data=f"{num}set_{set.id}")]
             ]
         )
 
@@ -102,3 +102,21 @@ async def create_set_handler(update: Update, context: ContextTypes.DEFAULT_TYPE)
             text="Повторения должены быть числом\nВведите количество повторений:",
         )
         return GET_SET_REPS
+    
+async def get_set_info(update: Update, context: ContextTypes.DEFAULT_TYPE) -> None:
+    query = update.callback_query
+    await query.answer()
+    num = match(r'\d+', query.data).group()
+    set_id = int(query.data.split("_")[1])
+    set = await get_set(set_id=set_id)
+    keyboard = [
+        [InlineKeyboardButton(text="Изменить вес", callback_data="edit_weight")],
+        [InlineKeyboardButton(text="Изменить повторения", callback_data="edit_reps")],
+        [InlineKeyboardButton(text="Назад к упражнению", callback_data="sets")],
+        [InlineKeyboardButton(text="Удалить подход", callback_data="delete_set")]
+    ]
+    await query.edit_message_text(
+        text=f"Подход {num}\nвес {set.weight}кг\n{set.reps}повторений",
+        reply_markup=InlineKeyboardMarkup(keyboard)
+    )
+

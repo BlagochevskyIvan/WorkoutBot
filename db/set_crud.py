@@ -2,6 +2,7 @@ from db.database import get_session
 from db.models import Exercise, Set
 from sqlalchemy import select
 from sqlalchemy.orm import selectinload
+from typing import Optional
 
 async def create_set(exercise_id: int, weight: int, reps: int) -> Exercise:
     async with get_session() as session:
@@ -48,3 +49,12 @@ async def delete_set(set_id: int) -> None:
 
         await session.delete(set)
         await session.commit()
+
+async def get_set(set_id: int) -> Optional[Set]:
+    async with get_session() as session:
+        set = (
+            await session.execute(
+                select(Set).where(Set.id == set_id)
+            )
+        ).scalars().first()
+    return set

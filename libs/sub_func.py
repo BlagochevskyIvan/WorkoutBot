@@ -17,7 +17,7 @@ def date_now():
 
 def validate_num(num: str) -> bool:
     try:
-        x = float(s)
+        x = float(num)
         return x >= 0 and isfinite(x)
     except ValueError:
         return False
