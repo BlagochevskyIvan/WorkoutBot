@@ -2,6 +2,7 @@ from db.database import get_session
 from db.models import User, Program
 from sqlalchemy import select, update
 from sqlalchemy.orm import selectinload
+from typing import Optional
 
 async def create_program(telegram_id: int, name: str) -> Program:
     async with get_session() as session:
@@ -49,6 +50,14 @@ async def delete_program(program_id: int) -> None:
         await session.delete(program)
         await session.commit()
 
+async def get_program(program_id: int) -> Optional[Program]:
+    async with get_session() as session:
+        program = (
+            await session.execute(
+                select(Program).where(Program.id == program_id)
+            )
+        ).scalars().first()
+    return program
 
 
 

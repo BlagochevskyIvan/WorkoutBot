@@ -2,8 +2,8 @@ from telegram import Update
 from telegram.ext import ContextTypes
 from telegram import InlineKeyboardButton, InlineKeyboardMarkup
 from db.exercise_crud import get_exercises, create_exercise
+from db.workout_crud import get_workout
 from config.states import MENU, GET_EXERCISE_NAME
-from config.logger import logger
 
 async def list_exercises(update: Update, context: ContextTypes.DEFAULT_TYPE) -> None:
     query = update.callback_query
@@ -12,6 +12,7 @@ async def list_exercises(update: Update, context: ContextTypes.DEFAULT_TYPE) -> 
         workout_id = int(query.data.split("_")[1])
         context.user_data["workout_id"] = workout_id
     workout_id = context.user_data["workout_id"]
+    workout = await get_workout(workout_id)
     exercises = await get_exercises(workout_id)
     keyboard = []
     if not exercises:
@@ -23,7 +24,7 @@ async def list_exercises(update: Update, context: ContextTypes.DEFAULT_TYPE) -> 
             ]
         )
         await query.edit_message_text(
-            text="В этой тренировке пока пусто\nДобавьте упражнения",
+            text=f"{workout.name}\n\nВ этой тренировке пока пусто\nДобавьте упражнения",
             reply_markup=InlineKeyboardMarkup(keyboard)
         )
         return MENU
@@ -45,7 +46,7 @@ async def list_exercises(update: Update, context: ContextTypes.DEFAULT_TYPE) -> 
         ]
     )
     await query.edit_message_text(
-        text="Тренировки в программе",
+        text=f"{workout.name}",
         reply_markup=InlineKeyboardMarkup(keyboard)
     )
     return MENU

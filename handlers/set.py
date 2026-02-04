@@ -14,7 +14,7 @@ async def list_sets(update: Update, context: ContextTypes.DEFAULT_TYPE) -> None:
         exercise_id = int(query.data.split("_")[1])
         context.user_data["exercise_id"] = exercise_id
     exercise_id = context.user_data["exercise_id"]
-    exercise = await get_exercise(exercise_id=exercise_id)
+    exercise = await get_exercise(exercise_id)
     sets = await get_sets(exercise_id)
     keyboard = []
     if not sets:
@@ -26,7 +26,7 @@ async def list_sets(update: Update, context: ContextTypes.DEFAULT_TYPE) -> None:
             ]
         )
         await query.edit_message_text(
-            text=f"{exercise.name}\nВ этом упржнении пока нет подходов\nВы можете добавить их",
+            text=f"{exercise.name}\n\nВ этом упржнении пока нет подходов\nВы можете добавить их",
             reply_markup=InlineKeyboardMarkup(keyboard)
         )
         return MENU
@@ -110,7 +110,7 @@ async def get_set_info(update: Update, context: ContextTypes.DEFAULT_TYPE) -> No
     await query.answer()
     num = match(r'\d+', query.data).group()
     set_id = int(query.data.split("_")[1])
-    set = await get_set(set_id=set_id)
+    set = await get_set(set_id)
     keyboard = [
         [InlineKeyboardButton(text="Изменить вес", callback_data="edit_weight")],
         [InlineKeyboardButton(text="Изменить повторения", callback_data="edit_reps")],
