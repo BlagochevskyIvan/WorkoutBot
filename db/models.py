@@ -1,4 +1,4 @@
-from sqlalchemy import Column, Integer, String, BigInteger, ForeignKey, Boolean, Float
+from sqlalchemy import Column, Integer, String, BigInteger, ForeignKey, Boolean, Float, Date, func
 from sqlalchemy.orm import relationship
 from sqlalchemy.orm import declarative_base
 
@@ -14,7 +14,7 @@ class User(Base):
     gender = Column(String, nullable=True)
     experience = Column(String, nullable=True)
     place = Column(String, nullable=True)
-    birth_date = Column(String, nullable=True)
+    birth_date = Column(Date, nullable=True)
 
     programs = relationship(
         "Program",
@@ -54,6 +54,7 @@ class Workout(Base):
         back_populates="workout",
         cascade="all, delete-orphan"
     )
+    fact_workouts = relationship("FactWorkout", back_populates="workout", cascade="all, delete-orphan")
 
 class Exercise(Base):
     __tablename__ = "exercises"
@@ -74,8 +75,8 @@ class Set(Base):
 
     id = Column(Integer, primary_key=True, autoincrement=True)
     exercise_id = Column(Integer, ForeignKey("exercises.id"), nullable=False)
-    weight = Column(String, nullable=True)
-    reps = Column(String, nullable=True)
+    weight = Column(Float, nullable=True)
+    reps = Column(Integer, nullable=True)
     
     exercise = relationship("Exercise", back_populates="sets")
 
@@ -84,7 +85,8 @@ class FactWorkout(Base):
 
     id = Column(Integer, primary_key=True, autoincrement=True)
     user_id = Column(Integer, ForeignKey("users.id"))
-    date = Column(String, nullable=False)
+    created_at = Column(Date, default=func.current_date())
+    workout_id = Column(Integer, ForeignKey("workouts.id"))
 
 
     user = relationship("User", back_populates="fact_workouts")
@@ -93,7 +95,8 @@ class FactWorkout(Base):
         back_populates="fact_workout",
         cascade="all, delete-orphan"
     )
-
+    workout = relationship("Workout", back_populates="fact_workouts")
+    
 class FactExercise(Base):
     __tablename__ = "fact_exercises"
     
