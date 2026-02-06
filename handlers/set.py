@@ -74,38 +74,53 @@ async def list_sets(update: Update, context: ContextTypes.DEFAULT_TYPE) -> None:
 async def get_set_weight(update: Update, context: ContextTypes.DEFAULT_TYPE) -> int:
     query = update.callback_query
     await query.answer()
-    message = await context.bot.send_message(
-        chat_id=query.message.chat_id,
+
+    message = await query.edit_message_text(
         text="Введите вес подхода:",
     )
-    context.user_data["question_id"] = message.id
+
+    context.user_data["question_message_id"] = message.message_id
+    # message = await context.bot.send_message(
+    #     chat_id=query.message.chat_id,
+    #     text="Введите вес подхода:",
+    # )
+    # context.user_data["question_id"] = message.id
+
+    # message = await query.edit_message_text(
+    #     text="Введите вес подхода:",
+    # )
+    # context.user_data["question_id"] = message.id
     return GET_SET_WEIGHT
 
 
 async def get_set_reps(update: Update, context: ContextTypes.DEFAULT_TYPE) -> int:
     await context.bot.delete_messages(
         chat_id=update.effective_chat.id,
-        message_ids=[context.user_data["question_id"], update.effective_message.id],
+        message_ids=[update.effective_message.id],
     )
     weight = update.message.text
     if validate_num(weight):
         context.user_data["set_weight"] = weight
-        await context.bot.send_message(
+        await context.bot.edit_message_text(
             chat_id=update.effective_chat.id,
+            message_id=context.user_data["question_message_id"],
             text="Введите количество повторений подхода:",
         )
         return GET_SET_REPS
     else:
-        await context.bot.send_message(
+        await context.bot.edit_message_text(
             chat_id=update.effective_chat.id,
+            message_id=context.user_data["question_message_id"],
             text="Введите вес должен быть числом\nВведите вес подхода:",
         )
         return GET_SET_WEIGHT
 
 
-async def create_set_handler(
-    update: Update, context: ContextTypes.DEFAULT_TYPE
-) -> None:
+async def create_set_handler(update: Update, context: ContextTypes.DEFAULT_TYPE) -> None:
+    await context.bot.delete_messages(
+        chat_id=update.effective_chat.id,
+        message_ids=[update.effective_message.id],
+    )
     tg_user = update.effective_user
     reps = update.message.text
     if validate_num(reps):
@@ -123,15 +138,17 @@ async def create_set_handler(
             [InlineKeyboardButton(text="Назад к подходам", callback_data="sets")],
             [InlineKeyboardButton(text="Меню", callback_data="menu")],
         ]
-        await context.bot.send_message(
+        await context.bot.edit_message_text(
             chat_id=tg_user.id,
+            message_id=context.user_data["question_message_id"],
             text=f"подход успешно создан!",
             reply_markup=InlineKeyboardMarkup(keyboard),
         )
         return MENU
     else:
-        await context.bot.send_message(
-            chat_id=update.effective_chat.id,
+        await context.bot.edit_message_text(
+            chat_id=tg_user.id,
+            message_id=context.user_data["question_message_id"],
             text="Повторения должены быть числом\nВведите количество повторений:",
         )
         return GET_SET_REPS

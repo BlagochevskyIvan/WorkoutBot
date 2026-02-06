@@ -51,13 +51,17 @@ async def list_workouts(update: Update, context: ContextTypes.DEFAULT_TYPE) -> N
 async def get_workout_name(update: Update, context: ContextTypes.DEFAULT_TYPE) -> int:
     query = update.callback_query
     await query.answer()
-    await context.bot.send_message(
-        chat_id=query.message.chat_id,
+    message = await query.edit_message_text(
         text="Введите название новой тренировки:",
     )
+    context.user_data["question_message_id"] = message.message_id
     return GET_WORKOUT_NAME
 
 async def create_workout_handler(update: Update, context: ContextTypes.DEFAULT_TYPE) -> None:
+    await context.bot.delete_messages(
+        chat_id=update.effective_chat.id,
+        message_ids=[update.effective_message.id],
+    )
     tg_user = update.effective_user
     program_id = context.user_data.get("program_id")
     workout_name = update.message.text
@@ -68,8 +72,9 @@ async def create_workout_handler(update: Update, context: ContextTypes.DEFAULT_T
         [InlineKeyboardButton(text="Назад к тренировкам", callback_data="workouts")],
         [InlineKeyboardButton(text="Меню", callback_data="menu")]
         ]
-    await context.bot.send_message(
+    await context.bot.edit_message_text(
         chat_id=tg_user.id,
+        message_id=context.user_data["question_message_id"],
         text=f"Тренировка '{workout_name}' успешно создана!",
         reply_markup=InlineKeyboardMarkup(keyboard)
     )

@@ -11,6 +11,10 @@ from config.states import PROFILE, MENU
 from db.user_crud import get_user, create_user
 
 async def start(update: Update, context: ContextTypes.DEFAULT_TYPE) -> int:
+    await context.bot.delete_messages(
+        chat_id=update.effective_chat.id,
+        message_ids=[update.effective_message.id],
+    )
     tg_user = update.effective_user
     db_user = await get_user(telegram_id=tg_user.id)
     if not db_user:
