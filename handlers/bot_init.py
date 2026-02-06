@@ -64,7 +64,7 @@ def create_bot_app():
             GET_SET_WEIGHT: [MessageHandler(filters.TEXT & ~filters.COMMAND, get_set_reps)],
             GET_SET_REPS: [MessageHandler(filters.TEXT & ~filters.COMMAND, create_set_handler)]
         },
-        fallbacks=[CommandHandler("start", restart)],
+        fallbacks=[CommandHandler("start", start)],
         name="main_conversation",
     )
 

@@ -12,32 +12,36 @@ from config.states import PROFILE, MENU
 from db.user_crud import get_user, create_user
 
 async def start(update: Update, context: ContextTypes.DEFAULT_TYPE) -> int:
+    context.user_data.clear()
+    context.chat_data.clear()
+
     tg_user = update.effective_user
+    chat_id = update.effective_chat.id
+
     db_user = await get_user(telegram_id=tg_user.id)
+
     if not db_user:
         db_user = await create_user(tg_user.id, tg_user.username)
-        keyboard = [[InlineKeyboardButton("Мужчина", callback_data='male'), InlineKeyboardButton("Женщина", callback_data='female')]]
-        await context.bot.delete_messages(
-            chat_id=update.effective_chat.id,
-            message_ids=[update.effective_message.id],
-        )
+        keyboard = [[
+            InlineKeyboardButton("Мужчина", callback_data='male'),
+            InlineKeyboardButton("Женщина", callback_data='female')
+        ]]
         await context.bot.send_message(
-            chat_id=tg_user.id,
-            text=f"Привет, {tg_user.first_name}! Добро пожаловать в бота для создания тренировок.\n\nДля начала работы необходимо создать профиль.\n\nКто вы?",
+            chat_id=chat_id,
+            text=f"Привет, {tg_user.first_name}! Добро пожаловать в бота.\n\nКто вы?",
             reply_markup=InlineKeyboardMarkup(keyboard)
-            )
+        )
         return PROFILE
     else:
-        keyboard = [[InlineKeyboardButton("Программы тренировок", callback_data='programs')], [InlineKeyboardButton("Профиль", callback_data='profile')]]
-        await context.bot.delete_messages(
-            chat_id=update.effective_chat.id,
-            message_ids=[update.effective_message.id],
-        )
+        keyboard = [
+            [InlineKeyboardButton("Программы тренировок", callback_data='programs')],
+            [InlineKeyboardButton("Профиль", callback_data='profile')]
+        ]
         await context.bot.send_message(
-            chat_id=tg_user.id,
+            chat_id=chat_id,
             text="Вы уже зарегистрированы в боте. Используйте меню для навигации.",
             reply_markup=InlineKeyboardMarkup(keyboard)
-            )
+        )
         return MENU
 
 async def menu(update: Update, context: ContextTypes.DEFAULT_TYPE) -> int:
