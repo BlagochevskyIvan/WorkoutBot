@@ -68,7 +68,7 @@ async def create_exercise_handler(update: Update, context: ContextTypes.DEFAULT_
     exercise = await create_exercise(workout_id=workout_id, name=exercise_name)
     context.user_data["exercise_id"] = exercise.id
     keyboard = [
-        [InlineKeyboardButton(text="Добавить подход", callback_data="create_exercise")],
+        [InlineKeyboardButton(text="Добавить подход", callback_data="create_set")],
         [InlineKeyboardButton(text="Назад к упражнениям", callback_data="exercises")],
         [InlineKeyboardButton(text="Меню", callback_data="menu")]
         ]
