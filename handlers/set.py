@@ -141,7 +141,7 @@ async def create_set_handler(update: Update, context: ContextTypes.DEFAULT_TYPE)
         await context.bot.edit_message_text(
             chat_id=tg_user.id,
             message_id=context.user_data["question_message_id"],
-            text=f"подход успешно создан!",
+            text="подход успешно создан!",
             reply_markup=InlineKeyboardMarkup(keyboard),
         )
         return MENU

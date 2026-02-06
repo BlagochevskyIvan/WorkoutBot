@@ -1,4 +1,4 @@
-from datetime import datetime
+from datetime import datetime, date
 from math import isfinite
 from time import strftime, localtime
 
@@ -9,6 +9,9 @@ def validate_date(date_str: str) -> bool:
         return True
     except ValueError:
         return False
+
+def get_true_date(date_str: str) -> date:
+    return datetime.strptime(date_str, "%d.%m.%Y").date()
     
 # Берём нынешнюю дату
 def date_now():

@@ -9,6 +9,7 @@ from telegram.ext import (
 
 from config.states import MENU, GET_DATE, PROFILE
 from db.user_crud import add_gender, add_birth_date, add_expirience, add_place
+from libs.sub_func import get_true_date, validate_date
 
 async def get_gender(update: Update, context: ContextTypes.DEFAULT_TYPE) -> int:
     query = update.callback_query
@@ -45,27 +46,33 @@ async def get_place(update: Update, context: ContextTypes.DEFAULT_TYPE) -> int:
     place = query.data
     await add_place(telegram_id=update.effective_user.id, place=place)
     context.user_data["place"] = place
-    await query.edit_message_text(
+    message = await query.edit_message_text(
         text="Место тренировок установлено. \nТеперь введите вашу дату рождения в формате ДД.ММ.ГГГГ (например, 01.01.2001)",
     )
+    context.user_data["question_mesage_id"] = message.message_id
     return GET_DATE
 
 async def get_date(update: Update, context: ContextTypes.DEFAULT_TYPE) -> int:
+    await context.bot.delete_messages(
+        chat_id=update.effective_chat.id,
+        message_ids=[update.effective_message.id],
+    )
     tg_user = update.effective_user
     date_str = update.message.text
-    from libs.sub_func import validate_date
 
     if not validate_date(date_str):
-        await context.bot.send_message(
+        await context.bot.edit_message_text(
             chat_id=tg_user.id,
+            message_id=context.user_data["question_mesage_id"],
             text="Некорректный формат даты. Пожалуйста, введите дату в формате ДД.ММ.ГГГГ (например, 01.01.2001).",
         )
         return GET_DATE
-    await add_birth_date(telegram_id=tg_user.id, birth_date=date_str)
+    await add_birth_date(telegram_id=tg_user.id, birth_date=get_true_date(date_str))
     context.user_data["birth_date"] = date_str
     keyboard = [[InlineKeyboardButton("Меню", callback_data='menu')]]
-    await context.bot.send_message(
+    await context.bot.edit_message_text(
         chat_id=tg_user.id,
+        message_id=context.user_data["question_mesage_id"],
         text="Дата сохранена. Ваш профиль успешно создан!\nИспользуйте главное меню для навигации.",
         reply_markup=InlineKeyboardMarkup(keyboard)
     )

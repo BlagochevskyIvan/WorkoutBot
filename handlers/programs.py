@@ -3,7 +3,6 @@ from telegram.ext import ContextTypes
 from telegram import InlineKeyboardButton, InlineKeyboardMarkup
 from db.programs_crud import get_programs, create_program
 from config.states import MENU, GET_PROGRAMM_NAME
-from config.logger import logger
 
 async def list_programs(update: Update, context: ContextTypes.DEFAULT_TYPE) -> None:
     query = update.callback_query

@@ -23,7 +23,6 @@ class User(Base):
     )
 
     fact_workouts = relationship("FactWorkout", back_populates="user", cascade="all, delete-orphan")
-    # добавить в факт ворк отношение и добить тут
 
 class Program(Base):
     __tablename__ = "programs"

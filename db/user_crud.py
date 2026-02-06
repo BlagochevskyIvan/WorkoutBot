@@ -36,7 +36,7 @@ async def add_expirience(telegram_id: int, experience):
         await session.execute(
             update(User)
             .values(experience = experience)
-            .where(User.telegram_id == telegram_id )
+            .where(User.telegram_id == telegram_id)
         )
         await session.commit()
 

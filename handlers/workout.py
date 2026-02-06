@@ -4,7 +4,6 @@ from telegram import InlineKeyboardButton, InlineKeyboardMarkup
 from db.workout_crud import get_workouts, create_workout
 from db.programs_crud import get_program
 from config.states import MENU, GET_WORKOUT_NAME
-from config.logger import logger
 
 async def list_workouts(update: Update, context: ContextTypes.DEFAULT_TYPE) -> None:
     query = update.callback_query
