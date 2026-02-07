@@ -24,3 +24,7 @@ def validate_num(num: str) -> bool:
         return x >= 0 and isfinite(x)
     except ValueError:
         return False
+
+def pretty_float(num: float) -> str:
+    return str(int(num)) if num.is_integer() else str(num)
+

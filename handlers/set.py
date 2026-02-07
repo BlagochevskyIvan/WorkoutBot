@@ -3,7 +3,7 @@ from telegram.ext import ContextTypes
 from telegram import InlineKeyboardButton, InlineKeyboardMarkup
 from db.set_crud import get_sets, create_set, get_set
 from db.exercise_crud import get_exercise
-from libs.sub_func import validate_num
+from libs.sub_func import validate_num, pretty_float
 from config.states import MENU, GET_SET_WEIGHT, GET_SET_REPS
 from re import match
 
@@ -47,7 +47,7 @@ async def list_sets(update: Update, context: ContextTypes.DEFAULT_TYPE) -> None:
             [
                 [
                     InlineKeyboardButton(
-                        text=f"{num}. {set.weight}кг х {set.reps}",
+                        text=f"{num}. {pretty_float(set.weight)}кг х {set.reps}",
                         callback_data=f"{num}set_{set.id}",
                     )
                 ]
@@ -78,18 +78,7 @@ async def get_set_weight(update: Update, context: ContextTypes.DEFAULT_TYPE) -> 
     message = await query.edit_message_text(
         text="Введите вес подхода:",
     )
-
     context.user_data["question_message_id"] = message.message_id
-    # message = await context.bot.send_message(
-    #     chat_id=query.message.chat_id,
-    #     text="Введите вес подхода:",
-    # )
-    # context.user_data["question_id"] = message.id
-
-    # message = await query.edit_message_text(
-    #     text="Введите вес подхода:",
-    # )
-    # context.user_data["question_id"] = message.id
     return GET_SET_WEIGHT
 
 
@@ -167,6 +156,6 @@ async def get_set_info(update: Update, context: ContextTypes.DEFAULT_TYPE) -> No
         [InlineKeyboardButton(text="Удалить подход", callback_data="delete_set")],
     ]
     await query.edit_message_text(
-        text=f"Подход {num}\nвес {set.weight}кг\n{set.reps}повторений",
+        text=f"Подход {num}\nвес {pretty_float(set.weight)} кг\n{set.reps} повторений",
         reply_markup=InlineKeyboardMarkup(keyboard),
     )
