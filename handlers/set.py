@@ -98,7 +98,7 @@ async def get_set_reps(update: Update, context: ContextTypes.DEFAULT_TYPE) -> in
         chat_id=update.effective_chat.id,
         message_ids=[update.effective_message.id],
     )
-    weight = update.message.text
+    weight = update.message.text.replace(",", ".")
     if validate_num(weight):
         context.user_data["set_weight"] = weight
         await context.bot.edit_message_text(
@@ -122,7 +122,7 @@ async def create_set_handler(update: Update, context: ContextTypes.DEFAULT_TYPE)
         message_ids=[update.effective_message.id],
     )
     tg_user = update.effective_user
-    reps = update.message.text
+    reps = update.message.text.replace(",", ".")
     if validate_num(reps):
         exercise_id = int(context.user_data.get("exercise_id"))
         set_weight = float(context.user_data.get("set_weight"))
