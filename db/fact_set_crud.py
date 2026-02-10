@@ -1,26 +1,19 @@
 from db.database import get_session
-from db.models import Workout, FactWorkout, User
+from db.models import FactExercise, FactSet
 from sqlalchemy import select
 
-async def create_fact_workout(workout_id: int, user_id: int, name: str) -> FactWorkout:
+async def create_fact_set(fact_exercise_id: int, reps: int) -> FactSet:
     async with get_session() as session:
-        stmt = select(User).where(User.id == user_id)
+        stmt = select(FactExercise).where(FactExercise.id == fact_exercise_id)
         result = await session.execute(stmt)
-        user = result.scalars().first()
+        fact_exercise = result.scalars().first()
 
-        if not user:
-            raise ValueError("User not found")
+        if not fact_exercise:
+            raise ValueError("Fact workout not found")
 
-        stmt = select(Workout).where(Workout.id == workout_id)
-        result = await session.execute(stmt)
-        workout = result.scalars().first()
-
-        if not workout:
-            raise ValueError("Workout not found")
-
-        fact_workout = FactWorkout(name=name, user=user, workout=workout)
-        session.add(fact_workout)
+        fact_set = FactSet(fact_exercise_id=fact_exercise_id, reps=reps, fact_exercise=fact_exercise)
+        session.add(fact_set)
         await session.commit()
-        await session.refresh(fact_workout)
+        await session.refresh(fact_set)
 
-        return fact_workout
+        return fact_set
