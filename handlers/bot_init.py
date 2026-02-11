@@ -51,6 +51,7 @@ def create_bot_app():
                 CallbackQueryHandler(list_sets, pattern="^sets$"),
                 CallbackQueryHandler(get_set_weight, pattern="^create_set$"),
                 CallbackQueryHandler(get_set_info, pattern="^\d+set_\d+$"),
+                CallbackQueryHandler(empty_func, pattern="^start_workout$"),
             ],
             PROFILE: [
                 CallbackQueryHandler(get_gender, pattern="^(male|female)$"),
