@@ -5,6 +5,7 @@ from libs.sub_func import date_now
 from db.fact_workout_crud import create_fact_workout, get_fact_workouts
 from db.exercise_crud import get_exercises
 from db.set_crud import get_sets
+from db.fact_exercise_crud import create_fact_exercise
 
 
 async def start_workout(update: Update, context: ContextTypes) -> None:
@@ -17,15 +18,20 @@ async def start_workout(update: Update, context: ContextTypes) -> None:
     fact_workout = await create_fact_workout(created_at=created_at, user_id=user_id, workout_id=workout_id)
     context.user_data["fact_workout_id"] = fact_workout.id
 
-    fact_exercises = await get_exercises(workout_id=workout_id)
-    exercise_num = 0
-    fact_exercise = fact_exercises[exercise_num]
-    fact_sets = await get_sets(exercise_id=fact_exercise.id)
-    set_num = 0
-    fact_set = fact_sets[set_num]
+    exercises = await get_exercises(workout_id=workout_id)
+    fact_exercise_num = 0
+    exercise = exercises[fact_exercise_num]
+    fact_exercise = await create_fact_exercise(fact_workout_id=context.user_data["fact_workout_id"], name=exercise.name)
+    sets = await get_sets(exercise_id=exercise.id)
+    fact_set_num = 0
+    fact_set = sets[fact_set_num]
+    context.user_data["exercises"] = exercises
+    context.user_data["fact_exercise_num"] = fact_exercise_num
+    context.user_data["sets"] = sets
+    context.user_data["fact_set_num"] = fact_set_num
+
     
     await query.edit_message_text(
-        text=f"Тренировка {fact_workout_num}\n{created_at.strftime('%d/%m/%y')}\nУпражнение {exercise_num+1}\n{fact_exercise.name}\n\nПодход {set_num+1}\n{fact_set.weight}кг х {fact_set.reps}"
+        text=f"Тренировка {fact_workout_num}\n{created_at.strftime('%d/%m/%y')}\nУпражнение {fact_exercise_num+1}\n{fact_exercise.name}\n\nПодход {fact_set_num+1}\n{fact_set.weight}кг х {fact_set.reps}"
     )
-
     return MENU
