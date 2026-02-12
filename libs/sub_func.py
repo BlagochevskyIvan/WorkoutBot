@@ -1,6 +1,5 @@
 from datetime import datetime, date
 from math import isfinite
-from time import strftime, localtime
 
 # Проверка корректности даты в профиле
 def validate_date(date_str: str) -> bool:
