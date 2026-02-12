@@ -15,7 +15,8 @@ def get_true_date(date_str: str) -> date:
     
 # Берём нынешнюю дату
 def date_now():
-    time = strftime("%d/%m/%y",localtime())
+    time = date.today()
+    # time = strftime("%d/%m/%y",localtime())
     return time
 
 def validate_num(num: str) -> bool:

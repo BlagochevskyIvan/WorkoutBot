@@ -20,6 +20,7 @@ from handlers.programs import list_programs, get_program_name, create_program_ha
 from handlers.workout import list_workouts, get_workout_name, create_workout_handler
 from handlers.exercise import list_exercises, get_exercise_name, create_exercise_handler
 from handlers.set import list_sets, get_set_weight, get_set_reps, create_set_handler, get_set_info
+from handlers.fact_workout import start_workout
 
 
 def create_bot_app():
@@ -51,7 +52,7 @@ def create_bot_app():
                 CallbackQueryHandler(list_sets, pattern="^sets$"),
                 CallbackQueryHandler(get_set_weight, pattern="^create_set$"),
                 CallbackQueryHandler(get_set_info, pattern="^\d+set_\d+$"),
-                CallbackQueryHandler(empty_func, pattern="^start_workout$"),
+                CallbackQueryHandler(start_workout, pattern="^start_workout$"),
             ],
             PROFILE: [
                 CallbackQueryHandler(get_gender, pattern="^(male|female)$"),
