@@ -13,7 +13,7 @@ from config.cp_config import (
     TELEGRAM_TOKEN,
 )
 from config.logger import logger
-from config.states import MENU, GET_DATE, PROFILE, GET_PROGRAMM_NAME, GET_WORKOUT_NAME, GET_EXERCISE_NAME, GET_SET_WEIGHT, GET_SET_REPS
+from config.states import MENU, GET_DATE, PROFILE, GET_PROGRAMM_NAME, GET_WORKOUT_NAME, GET_EXERCISE_NAME, GET_SET_WEIGHT, GET_SET_REPS, GET_FACT_REPS
 from handlers.common import start, menu, empty_func
 from handlers.profile import get_date, get_gender, get_experience, get_place
 from handlers.programs import list_programs, get_program_name, create_program_handler
@@ -64,7 +64,8 @@ def create_bot_app():
             GET_WORKOUT_NAME: [MessageHandler(filters.TEXT & ~filters.COMMAND, create_workout_handler)],
             GET_EXERCISE_NAME: [MessageHandler(filters.TEXT & ~filters.COMMAND, create_exercise_handler)],
             GET_SET_WEIGHT: [MessageHandler(filters.TEXT & ~filters.COMMAND, get_set_reps)],
-            GET_SET_REPS: [MessageHandler(filters.TEXT & ~filters.COMMAND, create_set_handler)]
+            GET_SET_REPS: [MessageHandler(filters.TEXT & ~filters.COMMAND, create_set_handler)],
+            GET_FACT_REPS: [MessageHandler(filters.TEXT & ~filters.COMMAND, )]
         },
         fallbacks=[CommandHandler("start", start)],
         name="main_conversation",
