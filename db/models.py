@@ -111,6 +111,7 @@ class FactSet(Base):
 
     id = Column(Integer, primary_key=True, autoincrement=True)
     reps = Column(Integer)
+    weight = Column(Float,nullable=False)
     fact_exercise_id = Column(Integer, ForeignKey("fact_exercises.id"), nullable=False)
 
     fact_exercise = relationship("FactExercise", back_populates="fact_sets")

@@ -49,5 +49,8 @@ async def get_fact_reps(update: Update, context: ContextTypes.DEFAULT_TYPE) -> N
     fact_set_num = context.user_data["fact_set_num"]
     fact_exercise = context.user_data["fact_exercise"]
     fact_set = sets[fact_set_num]
-    await create_fact_set(fact_exercise_id=fact_exercise.id, reps=reps)
+    await create_fact_set(fact_exercise_id=fact_exercise.id, reps=reps, weight=fact_set.weight)
+    fact_set_num += 1
+    fact_set = sets[fact_set_num]
+
 
