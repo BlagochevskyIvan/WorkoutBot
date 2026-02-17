@@ -29,7 +29,7 @@ async def get_exercises(workout_id: int) -> list[Exercise]:
         )
 
         result = await session.execute(stmt)
-        workout = result.scalars().first()
+        workout = result.scalar_one_or_none()
 
         if not workout:
             return []

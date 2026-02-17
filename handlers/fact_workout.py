@@ -7,16 +7,18 @@ from db.exercise_crud import get_exercises
 from db.set_crud import get_sets
 from db.fact_exercise_crud import create_fact_exercise
 from db.fact_set_crud import create_fact_set
+from config.logger import logger
 
 
 async def start_workout(update: Update, context: ContextTypes) -> None:
     query = update.callback_query
     await query.answer()
-    created_at = date_now()
+
     user_id = update.effective_user.id
     workout_id = context.user_data["workout_id"]
+    fact_workouts= await get_fact_workouts(user_id=user_id)
     fact_workout_num = len(await get_fact_workouts(user_id=user_id)) + 1
-    fact_workout = await create_fact_workout(created_at=created_at, user_id=user_id, workout_id=workout_id)
+    fact_workout = await create_fact_workout(user_id=user_id, workout_id=workout_id)
     context.user_data["fact_workout_id"] = fact_workout.id
 
     exercises = await get_exercises(workout_id=workout_id)
@@ -34,7 +36,7 @@ async def start_workout(update: Update, context: ContextTypes) -> None:
 
     
     message = await query.edit_message_text(
-        text=f"Тренировка {fact_workout_num}\n{created_at.strftime('%d/%m/%y')}\nУпражнение {fact_exercise_num+1}\n{fact_exercise.name}\n\nПодход {fact_set_num+1}\n{fact_set.weight}кг х {fact_set.reps}\n\nВведите количество сделанных повторений:"
+        text=f"Тренировка {fact_workout_num}\n{fact_workout.created_at.strftime('%d/%m/%y')}\nУпражнение {fact_exercise_num+1}\n{fact_exercise.name}\n\nПодход {fact_set_num+1}\n{fact_set.weight}кг х {fact_set.reps}\n\nВведите количество сделанных повторений:"
     )
     context.user_data["question_message_id"] = message.id
     return GET_FACT_REPS

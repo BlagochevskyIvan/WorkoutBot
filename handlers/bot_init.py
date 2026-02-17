@@ -65,7 +65,7 @@ def create_bot_app():
             GET_EXERCISE_NAME: [MessageHandler(filters.TEXT & ~filters.COMMAND, create_exercise_handler)],
             GET_SET_WEIGHT: [MessageHandler(filters.TEXT & ~filters.COMMAND, get_set_reps)],
             GET_SET_REPS: [MessageHandler(filters.TEXT & ~filters.COMMAND, create_set_handler)],
-            GET_FACT_REPS: [MessageHandler(filters.TEXT & ~filters.COMMAND, )]
+            # GET_FACT_REPS: [MessageHandler(filters.TEXT & ~filters.COMMAND, )]
         },
         fallbacks=[CommandHandler("start", start)],
         name="main_conversation",
