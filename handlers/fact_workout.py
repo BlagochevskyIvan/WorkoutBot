@@ -1,5 +1,5 @@
 from telegram import Update
-from telegram.ext import ContextTypes
+from telegram.ext import ContextTypes, ConversationHandler
 from config.states import GET_FACT_REPS
 from libs.sub_func import date_now
 from db.fact_workout_crud import create_fact_workout, get_fact_workouts
@@ -41,18 +41,71 @@ async def start_workout(update: Update, context: ContextTypes) -> None:
     context.user_data["question_message_id"] = message.id
     return GET_FACT_REPS
 
-async def get_fact_reps(update: Update, context: ContextTypes.DEFAULT_TYPE) -> None:
+async def workout_way(update: Update, context: ContextTypes.DEFAULT_TYPE):
     reps = update.effective_message.text
+
     await context.bot.delete_messages(
         chat_id=update.effective_chat.id,
         message_ids=[update.effective_message.id]
     )
+
     sets = context.user_data["sets"]
     fact_set_num = context.user_data["fact_set_num"]
     fact_exercise = context.user_data["fact_exercise"]
+    exercises = context.user_data["exercises"]
+    fact_exercise_num = context.user_data["fact_exercise_num"]
+
     fact_set = sets[fact_set_num]
-    await create_fact_set(fact_exercise_id=fact_exercise.id, reps=reps, weight=fact_set.weight)
+
+    await create_fact_set(
+        fact_exercise_id=fact_exercise.id,
+        reps=int(reps),
+        weight=fact_set.weight
+    )
+
     fact_set_num += 1
-    fact_set = sets[fact_set_num]
+    if fact_set_num >= len(sets):
+        fact_exercise_num += 1
+        if fact_exercise_num >= len(exercises):
+            await context.bot.edit_message_text(
+                chat_id=update.effective_chat.id,
+                message_id=context.user_data["question_message_id"],
+                text="Тренировка завершена!"
+            )
+            return ConversationHandler.END
+
+        exercise = exercises[fact_exercise_num]
+        fact_exercise = await create_fact_exercise(
+            fact_workout_id=context.user_data["fact_workout_id"],
+            name=exercise.name
+        )
+
+        sets = await get_sets(exercise_id=exercise.id)
+        fact_set_num = 0
+        fact_set = sets[fact_set_num]
+
+        context.user_data["fact_exercise"] = fact_exercise
+        context.user_data["fact_exercise_num"] = fact_exercise_num
+        context.user_data["sets"] = sets
+        context.user_data["fact_set_num"] = fact_set_num
+
+    else:
+        context.user_data["fact_set_num"] = fact_set_num
+        fact_set = sets[fact_set_num]
+
+    await context.bot.edit_message_text(
+        chat_id=update.effective_chat.id,
+        message_id=context.user_data["question_message_id"],
+        text=(
+            f"Упражнение {context.user_data['fact_exercise_num']+1}\n"
+            f"{context.user_data['fact_exercise'].name}\n\n"
+            f"Подход {fact_set_num+1}\n"
+            f"{fact_set.weight}кг х {fact_set.reps}\n\n"
+            f"Введите количество сделанных повторений:"
+        )
+    )
+
+    return GET_FACT_REPS
+
 
 

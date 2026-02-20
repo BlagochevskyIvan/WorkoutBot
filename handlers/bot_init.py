@@ -20,7 +20,7 @@ from handlers.programs import list_programs, get_program_name, create_program_ha
 from handlers.workout import list_workouts, get_workout_name, create_workout_handler
 from handlers.exercise import list_exercises, get_exercise_name, create_exercise_handler
 from handlers.set import list_sets, get_set_weight, get_set_reps, create_set_handler, get_set_info
-from handlers.fact_workout import start_workout
+from handlers.fact_workout import start_workout, workout_way
 
 
 def create_bot_app():
@@ -65,7 +65,7 @@ def create_bot_app():
             GET_EXERCISE_NAME: [MessageHandler(filters.TEXT & ~filters.COMMAND, create_exercise_handler)],
             GET_SET_WEIGHT: [MessageHandler(filters.TEXT & ~filters.COMMAND, get_set_reps)],
             GET_SET_REPS: [MessageHandler(filters.TEXT & ~filters.COMMAND, create_set_handler)],
-            # GET_FACT_REPS: [MessageHandler(filters.TEXT & ~filters.COMMAND, )]
+            GET_FACT_REPS: [MessageHandler(filters.TEXT & ~filters.COMMAND, workout_way)]
         },
         fallbacks=[CommandHandler("start", start)],
         name="main_conversation",
