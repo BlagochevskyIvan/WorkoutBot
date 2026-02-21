@@ -36,7 +36,7 @@ async def get_exercises(workout_id: int) -> list[Exercise]:
 
         return workout.exercises
         
-async def delete_exercise(exercise_id: int) -> None:
+async def delete_exercise_crud(exercise_id: int) -> None:
     async with get_session() as session:
         exercise = (
             await session.execute(

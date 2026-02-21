@@ -28,6 +28,11 @@ async def list_sets(update: Update, context: ContextTypes.DEFAULT_TYPE) -> None:
                 ],
                 [
                     InlineKeyboardButton(
+                        text="Удалить упражнение", callback_data="delete_exercise"
+                    )
+                ],
+                [
+                    InlineKeyboardButton(
                         text="Назад к упражнениям", callback_data="exercises"
                     )
                 ],
@@ -57,6 +62,11 @@ async def list_sets(update: Update, context: ContextTypes.DEFAULT_TYPE) -> None:
     keyboard.extend(
         [
             [InlineKeyboardButton(text="Добавить подход", callback_data="create_set")],
+            [
+                InlineKeyboardButton(
+                    text="Удалить упражнение", callback_data="delete_exercise"
+                )
+            ],
             [
                 InlineKeyboardButton(
                     text="Назад к упражнениям", callback_data="exercises"
