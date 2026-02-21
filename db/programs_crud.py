@@ -1,6 +1,6 @@
 from db.database import get_session
 from db.models import User, Program
-from sqlalchemy import select, update
+from sqlalchemy import select
 from sqlalchemy.orm import selectinload
 from typing import Optional
 
@@ -36,7 +36,7 @@ async def get_programs(telegram_id: int) -> list[Program]:
 
         return user.programs
     
-async def delete_program(program_id: int) -> None:
+async def delete_program_crud(program_id: int) -> None:
     async with get_session() as session:
         program = (
             await session.execute(
