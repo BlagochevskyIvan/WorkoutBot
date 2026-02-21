@@ -115,25 +115,44 @@ async def create_set_handler(update: Update, context: ContextTypes.DEFAULT_TYPE)
     if validate_num(reps):
         exercise_id = int(context.user_data.get("exercise_id"))
         set_weight = float(context.user_data.get("set_weight"))
-        # set_reps = update.message.text
         set = await create_set(exercise_id=exercise_id, weight=set_weight, reps=int(reps))
-        context.user_data["set_id"] = set.id
-        keyboard = [
+        exercise = await get_exercise(exercise_id)
+        sets = await get_sets(exercise_id)
+        keyboard = []
+        num = 0
+        for set in sets:
+            num += 1
+            keyboard.extend(
+                [
+                    [
+                        InlineKeyboardButton(
+                            text=f"{num}. {pretty_float(set.weight)}кг х {set.reps}",
+                            callback_data=f"{num}set_{set.id}",
+                        )
+                    ]
+                ]
+            )
+
+        keyboard.extend(
             [
-                InlineKeyboardButton(
-                    text="Изменить Подход", callback_data="create_exercise"
-                )
-            ],
-            [InlineKeyboardButton(text="Назад к подходам", callback_data="sets")],
-            [InlineKeyboardButton(text="Меню", callback_data="menu")],
-        ]
+                [InlineKeyboardButton(text="Добавить подход", callback_data="create_set")],
+                [
+                    InlineKeyboardButton(
+                        text="Назад к упражнениям", callback_data="exercises"
+                    )
+                ],
+                [InlineKeyboardButton(text="Меню", callback_data="menu")],
+            ]
+        )
+
         await context.bot.edit_message_text(
             chat_id=tg_user.id,
             message_id=context.user_data["question_message_id"],
-            text="подход успешно создан!",
+            text=f"подход успешно создан!\n\n{exercise.name}",
             reply_markup=InlineKeyboardMarkup(keyboard),
         )
         return MENU
+    
     else:
         await context.bot.edit_message_text(
             chat_id=tg_user.id,
