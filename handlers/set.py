@@ -1,7 +1,7 @@
 from telegram import Update
 from telegram.ext import ContextTypes
 from telegram import InlineKeyboardButton, InlineKeyboardMarkup
-from db.set_crud import get_sets, create_set, get_set
+from db.set_crud import get_sets, create_set, get_set, delete_set_crud
 from db.exercise_crud import get_exercise
 from libs.sub_func import validate_num, pretty_float
 from config.states import MENU, GET_SET_WEIGHT, GET_SET_REPS
@@ -116,6 +116,7 @@ async def create_set_handler(update: Update, context: ContextTypes.DEFAULT_TYPE)
         exercise_id = int(context.user_data.get("exercise_id"))
         set_weight = float(context.user_data.get("set_weight"))
         set = await create_set(exercise_id=exercise_id, weight=set_weight, reps=int(reps))
+
         exercise = await get_exercise(exercise_id)
         sets = await get_sets(exercise_id)
         keyboard = []
@@ -167,6 +168,7 @@ async def get_set_info(update: Update, context: ContextTypes.DEFAULT_TYPE) -> No
     await query.answer()
     num = match(r"\d+", query.data).group()
     set_id = int(query.data.split("_")[1])
+    context.user_data["set_id"] = set_id
     set = await get_set(set_id)
     keyboard = [
         [InlineKeyboardButton(text="Изменить вес", callback_data="edit_weight")],
@@ -178,3 +180,68 @@ async def get_set_info(update: Update, context: ContextTypes.DEFAULT_TYPE) -> No
         text=f"Подход {num}\nвес {pretty_float(set.weight)} кг\n{set.reps} повторений",
         reply_markup=InlineKeyboardMarkup(keyboard),
     )
+    return MENU
+
+async def delete_set(update: Update, context: ContextTypes.DEFAULT_TYPE) -> None:
+    query = update.callback_query
+    await query.answer()
+    set_id = context.user_data["set_id"]
+    await delete_set_crud(set_id=set_id)
+
+    exercise_id = context.user_data["exercise_id"]
+    exercise = await get_exercise(exercise_id)
+    sets = await get_sets(exercise_id)
+    keyboard = []
+    if not sets:
+        keyboard.extend(
+            [
+                [
+                    InlineKeyboardButton(
+                        text="Добавить подход", callback_data="create_set"
+                    )
+                ],
+                [
+                    InlineKeyboardButton(
+                        text="Назад к упражнениям", callback_data="exercises"
+                    )
+                ],
+                [InlineKeyboardButton(text="Меню", callback_data="menu")],
+            ]
+        )
+        await query.edit_message_text(
+            text=f"{exercise.name}\n\nВ этом упржнении пока нет подходов\nВы можете добавить их",
+            reply_markup=InlineKeyboardMarkup(keyboard),
+        )
+        return MENU
+
+    num = 0
+    for set in sets:
+        num += 1
+        keyboard.extend(
+            [
+                [
+                    InlineKeyboardButton(
+                        text=f"{num}. {pretty_float(set.weight)}кг х {set.reps}",
+                        callback_data=f"{num}set_{set.id}",
+                    )
+                ]
+            ]
+        )
+
+    keyboard.extend(
+        [
+            [InlineKeyboardButton(text="Добавить подход", callback_data="create_set")],
+            [
+                InlineKeyboardButton(
+                    text="Назад к упражнениям", callback_data="exercises"
+                )
+            ],
+            [InlineKeyboardButton(text="Меню", callback_data="menu")],
+        ]
+    )
+    await query.edit_message_text(
+        text=f"{exercise.name}", reply_markup=InlineKeyboardMarkup(keyboard)
+    )
+    return MENU
+
+

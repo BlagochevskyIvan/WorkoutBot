@@ -36,7 +36,7 @@ async def get_sets(exercise_id: int) -> list[Set]:
 
         return exercise.sets
         
-async def delete_set(set_id: int) -> None:
+async def delete_set_crud(set_id: int) -> None:
     async with get_session() as session:
         set = (
             await session.execute(
