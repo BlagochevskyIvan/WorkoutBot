@@ -9,14 +9,13 @@ async def list_programs(update: Update, context: ContextTypes.DEFAULT_TYPE) -> N
     await query.answer()
 
     tg_user = update.effective_user
-    keyboard = [
-        [InlineKeyboardButton(text="Создать программу", callback_data="create_program")],
-    ]
+    keyboard = []
     programs = await get_programs(tg_user.id)
     
     if not programs:
         keyboard.extend(
             [
+                [InlineKeyboardButton(text="Создать программу", callback_data="create_program")],
                 [InlineKeyboardButton(text="Меню", callback_data="menu")]
             ]
         )
@@ -36,6 +35,7 @@ async def list_programs(update: Update, context: ContextTypes.DEFAULT_TYPE) -> N
 
     keyboard.extend(
         [
+            [InlineKeyboardButton(text="Создать программу", callback_data="create_program")],
             [InlineKeyboardButton(text="Меню", callback_data="menu")]
         ]
     )
@@ -87,14 +87,13 @@ async def delete_program(update: Update, context: ContextTypes.DEFAULT_TYPE) -> 
     await delete_program_crud(program_id=program_id)
 
     tg_user = update.effective_user
-    keyboard = [
-        [InlineKeyboardButton(text="Создать программу", callback_data="create_program")],
-    ]
+    keyboard = []
     programs = await get_programs(tg_user.id)
     
     if not programs:
         keyboard.extend(
             [
+                [InlineKeyboardButton(text="Создать программу", callback_data="create_program")],
                 [InlineKeyboardButton(text="Меню", callback_data="menu")]
             ]
         )
@@ -114,6 +113,7 @@ async def delete_program(update: Update, context: ContextTypes.DEFAULT_TYPE) -> 
 
     keyboard.extend(
         [
+            [InlineKeyboardButton(text="Создать программу", callback_data="create_program")],
             [InlineKeyboardButton(text="Меню", callback_data="menu")]
         ]
     )
@@ -125,17 +125,4 @@ async def delete_program(update: Update, context: ContextTypes.DEFAULT_TYPE) -> 
         reply_markup=reply_markup
     )
     return MENU
-# async def open_program(update: Update, context: ContextTypes.DEFAULT_TYPE) -> int:
-#     query = update.callback_query
-#     await query.answer()
-
-#     program_id = int(query.data.split("_")[1])
-#     context.user_data["program_id"] = program_id
-#     keyboard = [
-#         [InlineKeyboardButton(text="Добавить тренировку", callback_data="create_workout")],
-#         [InlineKeyboardButton(text="К программам", callback_data="programs")],
-#         [InlineKeyboardButton(text="Меню", callback_data="menu")]
-#         ]
-
-#     return MENU
 

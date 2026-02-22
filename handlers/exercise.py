@@ -42,8 +42,8 @@ async def list_exercises(update: Update, context: ContextTypes.DEFAULT_TYPE) -> 
     keyboard.extend(
         [
             [InlineKeyboardButton(text="Добавить упражнение", callback_data="create_exercise")],
-            [InlineKeyboardButton(text="Удалить тренировку", callback_data="delete_workout")],
             [InlineKeyboardButton(text="Начать тренировку", callback_data="start_workout")],
+            [InlineKeyboardButton(text="Удалить тренировку", callback_data="delete_workout")],
             [InlineKeyboardButton(text="Назад к тренировкам", callback_data="workouts")],
             [InlineKeyboardButton(text="Меню", callback_data="menu")]
         ]
@@ -102,6 +102,7 @@ async def delete_exercise(update: Update, context: ContextTypes.DEFAULT_TYPE) ->
         keyboard.extend(
             [
                 [InlineKeyboardButton(text="Добавить упражнение", callback_data="create_exercise")],
+                [InlineKeyboardButton(text="Удалить тренировку", callback_data="delete_workout")],
                 [InlineKeyboardButton(text="Назад к тренировкам", callback_data="workouts")],
                 [InlineKeyboardButton(text="Меню", callback_data="menu")]
             ]
@@ -125,6 +126,7 @@ async def delete_exercise(update: Update, context: ContextTypes.DEFAULT_TYPE) ->
         [
             [InlineKeyboardButton(text="Добавить упражнение", callback_data="create_exercise")],
             [InlineKeyboardButton(text="Начать тренировку", callback_data="start_workout")],
+            [InlineKeyboardButton(text="Удалить тренировку", callback_data="delete_workout")],
             [InlineKeyboardButton(text="Назад к тренировкам", callback_data="workouts")],
             [InlineKeyboardButton(text="Меню", callback_data="menu")]
         ]

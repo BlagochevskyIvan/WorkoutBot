@@ -25,7 +25,7 @@ async def list_workouts(update: Update, context: ContextTypes.DEFAULT_TYPE) -> N
             ]
         )
         await query.edit_message_text(
-            text=f"{program.name}\n\nВ этой программе пока пусто\nДобавьте тренировки",
+            text=f"{program.name}\n\nВ этой программе пока пусто\nВы можете добавить тренировки",
             reply_markup=InlineKeyboardMarkup(keyboard)
         )
         return MENU
@@ -40,7 +40,8 @@ async def list_workouts(update: Update, context: ContextTypes.DEFAULT_TYPE) -> N
         [
             [InlineKeyboardButton(text="Добавить тренировку", callback_data="create_workout")],
             [InlineKeyboardButton(text="Удалить программу", callback_data="delete_program")],
-            [InlineKeyboardButton(text="Назад к программам", callback_data="programs")]
+            [InlineKeyboardButton(text="Назад к программам", callback_data="programs")],
+            [InlineKeyboardButton(text="Меню", callback_data="menu")]
         ]
     )
     await query.edit_message_text(
@@ -96,6 +97,7 @@ async def delete_workout(update: Update, context: ContextTypes.DEFAULT_TYPE) -> 
         keyboard.extend(
             [
                 [InlineKeyboardButton(text="Добавить тренировку", callback_data="create_workout")],
+                [InlineKeyboardButton(text="Удалить программу", callback_data="delete_program")],
                 [InlineKeyboardButton(text="Назад к программам", callback_data="programs")],
                 [InlineKeyboardButton(text="Меню", callback_data="menu")]
             ]
@@ -115,7 +117,9 @@ async def delete_workout(update: Update, context: ContextTypes.DEFAULT_TYPE) -> 
     keyboard.extend(
         [
             [InlineKeyboardButton(text="Добавить тренировку", callback_data="create_workout")],
-            [InlineKeyboardButton(text="Назад к программам", callback_data="programs")]
+            [InlineKeyboardButton(text="Удалить программу", callback_data="delete_program")],
+            [InlineKeyboardButton(text="Назад к программам", callback_data="programs")],
+            [InlineKeyboardButton(text="Меню", callback_data="menu")]
         ]
     )
     await query.edit_message_text(

@@ -21,21 +21,9 @@ async def list_sets(update: Update, context: ContextTypes.DEFAULT_TYPE) -> None:
     if not sets:
         keyboard.extend(
             [
-                [
-                    InlineKeyboardButton(
-                        text="Добавить подход", callback_data="create_set"
-                    )
-                ],
-                [
-                    InlineKeyboardButton(
-                        text="Удалить упражнение", callback_data="delete_exercise"
-                    )
-                ],
-                [
-                    InlineKeyboardButton(
-                        text="Назад к упражнениям", callback_data="exercises"
-                    )
-                ],
+                [InlineKeyboardButton(text="Добавить подход", callback_data="create_set")],
+                [InlineKeyboardButton(text="Удалить упражнение", callback_data="delete_exercise")],
+                [InlineKeyboardButton(text="Назад к упражнениям", callback_data="exercises")],
                 [InlineKeyboardButton(text="Меню", callback_data="menu")],
             ]
         )
@@ -62,16 +50,8 @@ async def list_sets(update: Update, context: ContextTypes.DEFAULT_TYPE) -> None:
     keyboard.extend(
         [
             [InlineKeyboardButton(text="Добавить подход", callback_data="create_set")],
-            [
-                InlineKeyboardButton(
-                    text="Удалить упражнение", callback_data="delete_exercise"
-                )
-            ],
-            [
-                InlineKeyboardButton(
-                    text="Назад к упражнениям", callback_data="exercises"
-                )
-            ],
+            [InlineKeyboardButton(text="Удалить упражнение", callback_data="delete_exercise")],
+            [InlineKeyboardButton(text="Назад к упражнениям", callback_data="exercises")],
             [InlineKeyboardButton(text="Меню", callback_data="menu")],
         ]
     )
@@ -147,11 +127,8 @@ async def create_set_handler(update: Update, context: ContextTypes.DEFAULT_TYPE)
         keyboard.extend(
             [
                 [InlineKeyboardButton(text="Добавить подход", callback_data="create_set")],
-                [
-                    InlineKeyboardButton(
-                        text="Назад к упражнениям", callback_data="exercises"
-                    )
-                ],
+                [InlineKeyboardButton(text="Удалить упражнение", callback_data="delete_exercise")],
+                [InlineKeyboardButton(text="Назад к упражнениям", callback_data="exercises")],
                 [InlineKeyboardButton(text="Меню", callback_data="menu")],
             ]
         )
@@ -183,8 +160,9 @@ async def get_set_info(update: Update, context: ContextTypes.DEFAULT_TYPE) -> No
     keyboard = [
         [InlineKeyboardButton(text="Изменить вес", callback_data="edit_weight")],
         [InlineKeyboardButton(text="Изменить повторения", callback_data="edit_reps")],
-        [InlineKeyboardButton(text="Назад к упражнению", callback_data="sets")],
         [InlineKeyboardButton(text="Удалить подход", callback_data="delete_set")],
+        [InlineKeyboardButton(text="Назад к упражнению", callback_data="sets")],
+        [InlineKeyboardButton(text="Меню", callback_data="menu")],
     ]
     await query.edit_message_text(
         text=f"Подход {num}\nвес {pretty_float(set.weight)} кг\n{set.reps} повторений",
@@ -205,16 +183,9 @@ async def delete_set(update: Update, context: ContextTypes.DEFAULT_TYPE) -> None
     if not sets:
         keyboard.extend(
             [
-                [
-                    InlineKeyboardButton(
-                        text="Добавить подход", callback_data="create_set"
-                    )
-                ],
-                [
-                    InlineKeyboardButton(
-                        text="Назад к упражнениям", callback_data="exercises"
-                    )
-                ],
+                [InlineKeyboardButton(text="Добавить подход", callback_data="create_set")],
+                [InlineKeyboardButton(text="Удалить упражнение", callback_data="delete_exercise")],
+                [InlineKeyboardButton(text="Назад к упражнениям", callback_data="exercises")],
                 [InlineKeyboardButton(text="Меню", callback_data="menu")],
             ]
         )
@@ -241,11 +212,8 @@ async def delete_set(update: Update, context: ContextTypes.DEFAULT_TYPE) -> None
     keyboard.extend(
         [
             [InlineKeyboardButton(text="Добавить подход", callback_data="create_set")],
-            [
-                InlineKeyboardButton(
-                    text="Назад к упражнениям", callback_data="exercises"
-                )
-            ],
+            [InlineKeyboardButton(text="Удалить упражнение", callback_data="delete_exercise")],
+            [InlineKeyboardButton(text="Назад к упражнениям", callback_data="exercises")],
             [InlineKeyboardButton(text="Меню", callback_data="menu")],
         ]
     )
