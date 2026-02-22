@@ -1,10 +1,10 @@
 from db.database import get_session
 from db.models import Exercise, Set
-from sqlalchemy import select
+from sqlalchemy import select, update
 from sqlalchemy.orm import selectinload
 from typing import Optional
 
-async def create_set(exercise_id: int, weight: int, reps: int) -> Exercise:
+async def create_set(exercise_id: int, weight: float, reps: int) -> Exercise:
     async with get_session() as session:
         stmt = select(Exercise).where(Exercise.id == exercise_id)
         result = await session.execute(stmt)
@@ -58,3 +58,12 @@ async def get_set(set_id: int) -> Optional[Set]:
             )
         ).scalars().first()
     return set
+
+async def edit_set(set_id: int, weight: float, reps: int):
+    async with get_session() as session:
+        await session.execute(
+            update(Set)
+            .values(weight=weight, reps=reps)
+            .where(Set.id == set_id)
+        )
+        await session.commit()
