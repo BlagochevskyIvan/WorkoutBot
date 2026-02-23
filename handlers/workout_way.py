@@ -1,6 +1,6 @@
-from telegram import Update
-from telegram.ext import ContextTypes, ConversationHandler
-from config.states import GET_FACT_REPS
+from telegram import Update, InlineKeyboardButton, InlineKeyboardMarkup
+from telegram.ext import ContextTypes
+from config.states import GET_FACT_REPS, MENU
 from db.fact_workout_crud import create_fact_workout, get_fact_workouts
 from db.exercise_crud import get_exercises
 from db.set_crud import get_sets
@@ -64,12 +64,18 @@ async def workout_way(update: Update, context: ContextTypes.DEFAULT_TYPE):
     if fact_set_num >= len(sets):
         fact_exercise_num += 1
         if fact_exercise_num >= len(exercises):
+            workout_id = context.user_data["workout_id"]
+            keyboard = [
+                [InlineKeyboardButton(text="К тренировке", callback_data=f"workout_{workout_id}")],
+                [InlineKeyboardButton(text="В меню", callback_data="menu")]
+            ]
             await context.bot.edit_message_text(
                 chat_id=update.effective_chat.id,
                 message_id=context.user_data["question_message_id"],
-                text="Тренировка завершена!"
+                text="Тренировка завершена!",
+                reply_markup=InlineKeyboardMarkup(keyboard)
             )
-            return ConversationHandler.END
+            return MENU
 
         exercise = exercises[fact_exercise_num]
         fact_exercise = await create_fact_exercise(
