@@ -1,4 +1,3 @@
-from datetime import date
 from db.database import get_session
 from db.models import Workout, FactWorkout, User
 from sqlalchemy import select, func

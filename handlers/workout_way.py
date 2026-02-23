@@ -1,13 +1,11 @@
 from telegram import Update
 from telegram.ext import ContextTypes, ConversationHandler
 from config.states import GET_FACT_REPS
-from libs.sub_func import date_now
 from db.fact_workout_crud import create_fact_workout, get_fact_workouts
 from db.exercise_crud import get_exercises
 from db.set_crud import get_sets
 from db.fact_exercise_crud import create_fact_exercise
 from db.fact_set_crud import create_fact_set
-from config.logger import logger
 
 
 async def start_workout(update: Update, context: ContextTypes) -> None:
@@ -16,7 +14,6 @@ async def start_workout(update: Update, context: ContextTypes) -> None:
 
     user_id = update.effective_user.id
     workout_id = context.user_data["workout_id"]
-    fact_workouts= await get_fact_workouts(user_id=user_id)
     fact_workout_num = len(await get_fact_workouts(user_id=user_id)) + 1
     fact_workout = await create_fact_workout(user_id=user_id, workout_id=workout_id)
     context.user_data["fact_workout_id"] = fact_workout.id

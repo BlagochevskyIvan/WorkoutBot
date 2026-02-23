@@ -20,7 +20,7 @@ from handlers.programs import list_programs, get_program_name, create_program_ha
 from handlers.workout import list_workouts, get_workout_name, create_workout_handler, delete_workout
 from handlers.exercise import list_exercises, get_exercise_name, create_exercise_handler, delete_exercise
 from handlers.set import list_sets, get_set_weight, get_set_reps, create_set_handler, get_set_info, delete_set, edit_set_weight, edit_set_reps, edit_set_handler
-from handlers.fact_workout import start_workout, workout_way
+from handlers.workout_way import start_workout, workout_way
 
 
 def create_bot_app():
