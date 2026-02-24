@@ -53,7 +53,6 @@ async def start(update: Update, context: ContextTypes.DEFAULT_TYPE) -> int:
 async def menu(update: Update, context: ContextTypes.DEFAULT_TYPE) -> int:
     query = update.callback_query
     await query.answer()
-    tg_user = update.effective_user
     keyboard = [
         [InlineKeyboardButton("Программы тренировок", callback_data="programs")],
         [InlineKeyboardButton("Профиль", callback_data="profile")],
