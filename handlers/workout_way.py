@@ -25,6 +25,7 @@ async def start_workout(update: Update, context: ContextTypes) -> None:
     sets = await get_sets(exercise_id=exercise.id)
     fact_set_num = 0
     fact_set = sets[fact_set_num]
+    context.user_data["weight_sum"] = 0
     context.user_data["fact_exercise"] = fact_exercise
     context.user_data["exercises"] = exercises
     context.user_data["fact_exercise_num"] = fact_exercise_num
@@ -60,6 +61,8 @@ async def workout_way(update: Update, context: ContextTypes.DEFAULT_TYPE):
         weight=fact_set.weight
     )
 
+    context.user_data["weight_sum"] += fact_set.weight * int(reps)
+
     fact_set_num += 1
     if fact_set_num >= len(sets):
         fact_exercise_num += 1
@@ -72,7 +75,7 @@ async def workout_way(update: Update, context: ContextTypes.DEFAULT_TYPE):
             await context.bot.edit_message_text(
                 chat_id=update.effective_chat.id,
                 message_id=context.user_data["question_message_id"],
-                text="Тренировка завершена!",
+                text=f"Тренировка завершена!\nВсего поднято: {context.user_data['weight_sum']}кг",
                 reply_markup=InlineKeyboardMarkup(keyboard)
             )
             return MENU
