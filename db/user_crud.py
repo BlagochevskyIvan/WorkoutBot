@@ -13,7 +13,7 @@ async def create_user(telegram_id: int, username: str) -> User:
         await session.refresh(user)
     return user
 
-async def get_user(telegram_id: int) -> Optional[User]:
+async def get_user_crud(telegram_id: int) -> Optional[User]:
     """Получает пользователя по telegram_id"""
     async with get_session() as session:
         stmt = select(User).where(User.telegram_id == telegram_id)

@@ -15,7 +15,7 @@ from config.cp_config import (
 from config.logger import logger
 from config.states import MENU, GET_DATE, PROFILE, GET_PROGRAMM_NAME, GET_WORKOUT_NAME, GET_EXERCISE_NAME, GET_SET_WEIGHT, GET_SET_REPS, GET_FACT_REPS, EDIT_SET_WEIGHT, EDIT_SET_REPS
 from handlers.common import start, menu, empty_func
-from handlers.profile import get_date, get_gender, get_experience, get_place
+from handlers.profile import get_date, get_gender, get_experience, get_place, get_user
 from handlers.programs import list_programs, get_program_name, create_program_handler, delete_program
 from handlers.workout import list_workouts, get_workout_name, create_workout_handler, delete_workout
 from handlers.exercise import list_exercises, get_exercise_name, create_exercise_handler, delete_exercise
@@ -39,7 +39,7 @@ def create_bot_app():
         states={
             MENU: [
                 CallbackQueryHandler(menu, pattern="^menu$"),
-                CallbackQueryHandler(empty_func, pattern="^profile$"),
+                CallbackQueryHandler(get_user, pattern="^profile$"),
                 CallbackQueryHandler(list_programs, pattern="^programs$"),
                 CallbackQueryHandler(get_program_name, pattern="^create_program$"),
                 CallbackQueryHandler(list_workouts, pattern="^program_\d+$"),

@@ -8,7 +8,7 @@ from telegram.ext import (
 )
 
 from config.states import MENU, GET_DATE, PROFILE
-from db.user_crud import add_gender, add_birth_date, add_expirience, add_place
+from db.user_crud import add_gender, add_birth_date, add_expirience, add_place, get_user_crud
 from libs.sub_func import get_true_date, validate_date
 
 async def get_gender(update: Update, context: ContextTypes.DEFAULT_TYPE) -> int:
@@ -76,4 +76,16 @@ async def get_date(update: Update, context: ContextTypes.DEFAULT_TYPE) -> int:
         text="Дата сохранена. Ваш профиль успешно создан!\nИспользуйте главное меню для навигации.",
         reply_markup=InlineKeyboardMarkup(keyboard)
     )
+    return MENU
+
+async def get_user(update: Update, context: ContextTypes.DEFAULT_TYPE) -> None:
+    query = update.callback_query
+    await query.answer()
+    user = update.effective_user
+    user_name = user.full_name
+    user = await get_user_crud(telegram_id=user.id)
+    await context.bot.edit_message_text(
+        text = f"{user_name}\n{user.birth_date}"
+    )
+
     return MENU
