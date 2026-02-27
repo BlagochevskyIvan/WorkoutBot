@@ -10,6 +10,7 @@ from telegram.ext import (
 from config.states import MENU, GET_DATE, PROFILE
 from db.user_crud import add_gender, add_birth_date, add_expirience, add_place, get_user_crud
 from libs.sub_func import get_true_date, validate_date
+from db.fact_workout_crud import get_count_workouts
 
 async def get_gender(update: Update, context: ContextTypes.DEFAULT_TYPE) -> int:
     query = update.callback_query
@@ -84,8 +85,16 @@ async def get_user(update: Update, context: ContextTypes.DEFAULT_TYPE) -> None:
     user = update.effective_user
     user_name = user.full_name
     user = await get_user_crud(telegram_id=user.id)
+    user_workouts = await get_count_workouts(user_tg_id=user.telegram_id)
+    keyboard = [
+        [InlineKeyboardButton("Редактировать профиль", callback_data="edit_profile")],
+        [InlineKeyboardButton("В меню", callback_data="menu")]
+    ]
     await context.bot.edit_message_text(
-        text = f"{user_name}\n{user.birth_date}"
+        chat_id=update.effective_chat.id,
+        message_id=query.message.message_id,
+        text = f"{user_name}\nКоличество тренировок: {user_workouts}\nДата рождения: {user.birth_date.strftime('%d/%m/%y')}",
+        reply_markup=InlineKeyboardMarkup(keyboard)
     )
 
     return MENU

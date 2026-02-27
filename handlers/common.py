@@ -5,7 +5,7 @@ from telegram.ext import (
 )
 
 from config.states import PROFILE, MENU
-from db.user_crud import get_user, create_user
+from db.user_crud import get_user_crud, create_user
 
 
 async def start(update: Update, context: ContextTypes.DEFAULT_TYPE) -> int:
@@ -15,7 +15,7 @@ async def start(update: Update, context: ContextTypes.DEFAULT_TYPE) -> int:
     tg_user = update.effective_user
     chat_id = update.effective_chat.id
 
-    db_user = await get_user(telegram_id=tg_user.id)
+    db_user = await get_user_crud(telegram_id=tg_user.id)
 
     if not db_user:
         db_user = await create_user(tg_user.id, tg_user.username)
