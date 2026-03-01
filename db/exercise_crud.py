@@ -50,11 +50,11 @@ async def delete_exercise_crud(exercise_id: int) -> None:
         await session.delete(exercise)
         await session.commit()
 
-async def get_exercise(exercise_id: int) -> Optional[Exercise]:
+async def get_exercise(ex_id: int) -> Optional[Exercise]:
     async with get_session() as session:
         exercise = (
             await session.execute(
-                select(Exercise).where(Exercise.id == exercise_id)
+                select(Exercise).where(Exercise.id == ex_id)
             )
         ).scalars().first()
-    return exercise
+    return exercise 
