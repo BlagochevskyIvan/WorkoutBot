@@ -1,4 +1,4 @@
-from telegram import Update, InlineKeyboardMarkup, InlineKeyboardButton
+from telegram import Update, InlineKeyboardMarkup, InlineKeyboardButton, WebAppInfo
 from telegram.ext import (
     ContextTypes,
     ConversationHandler,
@@ -6,6 +6,8 @@ from telegram.ext import (
 
 from config.states import PROFILE, MENU
 from db.user_crud import get_user_crud, create_user
+
+from config.cp_config import WEBAPP_URL
 
 
 async def start(update: Update, context: ContextTypes.DEFAULT_TYPE) -> int:
@@ -23,6 +25,7 @@ async def start(update: Update, context: ContextTypes.DEFAULT_TYPE) -> int:
             [
                 InlineKeyboardButton("Мужчина", callback_data="male"),
                 InlineKeyboardButton("Женщина", callback_data="female"),
+                
             ]
         ]
         await context.bot.send_message(
@@ -38,6 +41,7 @@ async def start(update: Update, context: ContextTypes.DEFAULT_TYPE) -> int:
         keyboard = [
             [InlineKeyboardButton("Программы тренировок", callback_data="programs")],
             [InlineKeyboardButton("Профиль", callback_data="profile")],
+            [InlineKeyboardButton(web_app=WebAppInfo(url=WEBAPP_URL), text="Веб-версия")],
         ]
         await context.bot.send_message(
             chat_id=chat_id,

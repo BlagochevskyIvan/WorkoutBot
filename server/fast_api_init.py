@@ -10,6 +10,7 @@ from config.cp_config import (
 )
 from config.logger import logger
 from server.routers.common_router import router as common_router
+from server.routers.api_router import router as api_router
 from handlers.bot_init import create_bot_app
 from telegram.ext import Application
 
@@ -52,7 +53,7 @@ async def lifespan(app: FastAPI):
 def init_fastapi_app():
     app = FastAPI(lifespan=lifespan)
     app.include_router(common_router)
-    # app.include_router(api_router)
+    app.include_router(api_router, prefix='/api')
     # app.include_router(payment_router)
     return app
 
