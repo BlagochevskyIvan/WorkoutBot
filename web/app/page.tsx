@@ -6,21 +6,28 @@ export default function Home() {
   const [userData, setUserData] = useState(null);
 
   useEffect(() => {
-    fetch("https://725a-109-71-244-92.ngrok-free.app/api/user")
-      .then((res) => {
-        alert(1);
-        res.json();
-      })
-      .then((data) => {
-        alert(data);
-        setUserData(data);
-      });
+    const fetchData = async () => {
+      const res = await fetch(`/api/user`);
+      if (!res.ok) {
+        throw new Error(`API Error: ${res.status}`);
+      }
+      const data = await res.json();
+      setUserData(data);
+    };
+
+    fetchData();
   }, []);
 
   return (
     <div className="flex min-h-screen items-center justify-center bg-zinc-50 font-sans dark:bg-black">
-      Главная
-      <a href="/vanya">Ваня</a>
+      <div className="text-center">
+        <h1 className="text-2xl font-bold mb-4">Главная</h1>
+        
+        {userData && <pre>{JSON.stringify(userData, null, 2)}</pre>}
+        <a href="/vanya" className="text-blue-500 hover:underline">
+          Ваня
+        </a>
+      </div>
     </div>
   );
 }
