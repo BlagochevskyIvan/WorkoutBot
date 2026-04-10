@@ -17,4 +17,8 @@ router = APIRouter()
 async def get_user():
     logger.info('мы')
     return JSONResponse({'name':'vanya'})
+@router.get('/user2')
+async def get_user2():
+    logger.info('мы')
+    return JSONResponse({'name':'vanya2'})
 

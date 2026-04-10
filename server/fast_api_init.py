@@ -42,7 +42,6 @@ async def lifespan(app: FastAPI):
     logger.info("Webhook set: %s", WEBHOOK_URL)
 
     yield
-    # Clean shutdown
     try:
         await bot_app.bot.delete_webhook()
     finally:
@@ -54,7 +53,6 @@ def init_fastapi_app():
     app = FastAPI(lifespan=lifespan)
     app.include_router(common_router)
     app.include_router(api_router, prefix='/api')
-    # app.include_router(payment_router)
     return app
 
 
