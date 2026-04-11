@@ -7,7 +7,6 @@ services:
       POSTGRES_USER: ${POSTGRES_USER}
       POSTGRES_PASSWORD: ${POSTGRES_PASSWORD}
       POSTGRES_DB: ${POSTGRES_DB}
-      POSTGRES_HOST_AUTH_METHOD: trust
     healthcheck:                                  # ✅ Проверяем, что Postgres готов
       test: ["CMD-SHELL", "pg_isready -U ${POSTGRES_USER} -d ${POSTGRES_DB}"]
       interval: 3s
@@ -24,7 +23,6 @@ services:
   app:
     build: .
     container_name: workout_bot-app-1
-
     env_file:
       - .env
     depends_on:
