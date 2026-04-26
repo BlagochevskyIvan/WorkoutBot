@@ -41,7 +41,7 @@ export default function Home() {
         <h1 className="text-2xl font-bold mb-4">Главная</h1>
 
         {userData && <pre>{JSON.stringify(userData, null, 2)}</pre>}
-        <a href="/vanya" className="text-blue-500 hover:underline">
+        <a href="/programs" className="text-blue-500 hover:underline">
           Ваня
         </a>
 
