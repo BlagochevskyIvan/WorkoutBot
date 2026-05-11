@@ -15,6 +15,17 @@ export default function Home() {
       }
       const data = await res.json();
       setUserData(data);
+
+      const tg = (window as any).Telegram?.WebApp
+
+      if (!tg){
+        console.log('Открой приложение через тг')
+        return;
+      }
+      tg.ready()
+      // alert(tg.initData?.user?.id)
+      const user = tg.initDataUnsafe?.user
+      alert(user.id)
     };
 
     fetchData();
@@ -44,7 +55,12 @@ export default function Home() {
         <a href="/programs" className="text-blue-500 hover:underline">
           Ваня
         </a>
-
+        <a href="/profile" className="text-blue-500 hover:underline">
+          Профиль
+        </a>
+        <div>
+          <a href="/programs"> Программы тренировок</a>
+        </div>
         <div>
           <p>{count}</p>
           <button onClick={() => setCount(count + 1)}>Кнопка</button>
