@@ -1,7 +1,6 @@
 from pydantic import BaseModel, ConfigDict
 from datetime import date
 
-
 class UserProfileResponse(BaseModel):
     model_config = ConfigDict(from_attributes=True)
 

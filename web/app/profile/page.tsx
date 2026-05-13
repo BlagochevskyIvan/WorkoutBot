@@ -45,8 +45,9 @@ export default function Home() {
   }
   return (
     <div className="flex min-h-screen items-center justify-center bg-zinc-50 font-sans dark:bg-black">
-      {userData.username}
-      {userData.birth_date}
+      {userData.username}<br />
+      Дата рождения {userData.birth_date}<br />
+      Пол {userData.gender}<br />
       {/* в нашем приложение с*/}
       {/* тренировок проведено */}
       {/* вес */}

@@ -22,9 +22,7 @@ export default function Home() {
         return;
       }
       tg.ready()
-      // alert(tg.initData?.user?.id)
       const user = tg.initDataUnsafe?.user
-      alert(user.id)
       setUserData(user.username)
     };
 
