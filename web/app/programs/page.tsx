@@ -32,9 +32,9 @@ export default function Home() {
         }
 
         console.log("USER:", user);
-
+        const URL = process.env.URL || "http://localhost:8000";
         const result = await fetch(
-          `https://stood-recreation-welcome-coordinator.trycloudflare.com/api/programs?telegram_id=${user.id}`
+          `{URL}/api/programs?telegram_id=${user.id}`
         );
 
         if (!result.ok) {
