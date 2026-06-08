@@ -1,6 +1,9 @@
 "use client";
 
 import { useEffect, useState } from "react";
+import Link from "next/link";
+import { getTelegramWebApp } from "@/lib/telegram";
+import { useTelegramUser } from "@/hooks/useTelegramUser";
 
 type Program = {
   id: number;
@@ -11,30 +14,25 @@ type Program = {
 export default function Home() {
   const [programs, setPrograms] = useState<Program[]>([]);
   const [loading, setLoading] = useState(true);
+  const {user, ready} = useTelegramUser()
 
   useEffect(() => {
+    if (!ready){
+      return
+    }
     async function fetchPrograms() {
       try {
-        const tg = (window as any).Telegram?.WebApp;
-
-        if (!tg) {
-          console.log("Открой приложение через Telegram");
-          return;
-        }
-
-        tg.ready();
-
-        const user = tg.initDataUnsafe?.user;
-
+      
         if (!user) {
-          console.log("Пользователь не найден");
+          alert('Открой приложение через тг')
           return;
         }
 
         console.log("USER:", user);
-        const URL = process.env.URL || "http://localhost:8000";
+        const URL = process.env.NEXT_PUBLIC_URL || "http://localhost:8000";
+
         const result = await fetch(
-          `{URL}/api/programs?telegram_id=${user.id}`
+          `${URL}/api/programs?telegram_id=${user.id}`,
         );
 
         if (!result.ok) {
@@ -55,7 +53,7 @@ export default function Home() {
     }
 
     fetchPrograms();
-  }, []);
+  }, [ready, user]);
 
   // Loader
   if (loading) {
@@ -68,26 +66,21 @@ export default function Home() {
 
   return (
     <div className="min-h-screen bg-black text-white p-4">
-      <h1 className="text-2xl font-bold mb-6">
-        Программы тренировок
-      </h1>
+      <h1 className="text-2xl font-bold mb-6">Программы тренировок</h1>
 
       {programs.length === 0 ? (
         <p>Тренировок нет</p>
       ) : (
         <ul>
           {programs.map((item) => (
-            <li
-              key={item.id}
-              className="border-b border-gray-700 py-4"
-            >
-              <h2 className="font-bold text-lg">
-                {item.name}
-              </h2>
+            <li key={item.id} className="border-b border-gray-700 py-4">
+              <Link href={`/programs/${item.id}`}>
+                <h2 className="font-bold text-lg">{item.name}</h2>
 
-              <p className="text-gray-400">
-                {item.description || "Нет описания"}
-              </p>
+                <p className="text-gray-400">
+                  {item.description || "Нет описания"}
+                </p>
+              </Link> 
             </li>
           ))}
         </ul>

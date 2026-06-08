@@ -1,5 +1,6 @@
 import type { Metadata } from "next";
 import { Geist, Geist_Mono } from "next/font/google";
+// @ts-ignore: CSS module declaration not found in this environment
 import "./globals.css";
 import { React } from "next/dist/server/route-modules/app-page/vendored/rsc/entrypoints";
 import Script from "next/script";
@@ -24,6 +25,7 @@ export default function RootLayout({
 }: Readonly<{
   children: React.ReactNode;
 }>) {
+  
   return (
     <html lang="ru">
       <body
@@ -33,6 +35,7 @@ export default function RootLayout({
           src="https://telegram.org/js/telegram-web-app.js"
           strategy="beforeInteractive"
         />
+
         {children}
       </body>
     </html>

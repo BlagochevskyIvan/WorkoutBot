@@ -5,8 +5,10 @@ from fastapi.responses import PlainTextResponse, FileResponse, JSONResponse
 
 from db.user_crud import get_user_crud
 from db.programs_crud import get_programs
+from db.workout_crud import get_workouts, create_workout
 from server.schemas.user import UserProfileResponse
 from server.schemas.program import ProgramResponse
+from server.schemas.workout import WorkoutResponse, WorkoutCreate
 
 from telegram import Update
 from config.cp_config import (
@@ -38,8 +40,18 @@ async def get_me(telegram_id:int):
     return UserProfileResponse.model_validate(user)
 
 @router.get('/programs', response_model=list[ProgramResponse])
+
 async def get_program_js(telegram_id:int):
     programs = await get_programs(telegram_id)
-
     return programs
+
+@router.get('/programs/{program_id}/workouts', response_model=list[WorkoutResponse])
+async def get_workout_js(program_id:int):
+    workouts = await get_workouts(program_id)
+    return workouts
+
+@router.post('/programs/{program_id}/workouts', response_model=WorkoutResponse)
+async def add_workout(program_id:int, body:WorkoutCreate):
+    workout = await create_workout(program_id, body.name)
+    return workout
     

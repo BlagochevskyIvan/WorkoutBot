@@ -1,0 +1,101 @@
+"use client";
+import Image from "next/image";
+import { useEffect, useState } from "react";
+import { useParams } from "next/navigation";
+import Link from "next/link";
+
+type Workout = {
+  id: number;
+  name: string;
+};
+
+export default function ProgramPageDetail() {
+  const [loading, setLoading] = useState(true);
+  const [workouts, setWorkouts] = useState<Workout[]>([]);
+  const [addWorkoutOpen, setAddWorkoutOpen] = useState(false);
+  const [workoutName, setWorkoutName] = useState("");
+  const params = useParams();
+  const programId = params.id;
+
+  useEffect(() => {
+    const fetchData = async () => {
+      const result = await fetch(`/api/programs/${programId}/workouts`);
+      if (!result.ok) {
+        throw new Error(`API Error: ${result.status}`);
+      }
+      const data: Workout[] = await result.json();
+      setWorkouts(data);
+      setLoading(false);
+      const tg = (window as any).Telegram?.WebApp;
+
+      if (!tg) {
+        console.log("Открой приложение через тг");
+        return;
+      }
+      tg.ready();
+    };
+
+    fetchData();
+  }, []);
+
+  const handleAddWorkout = async (e: React.FormEvent<HTMLFormElement>) => {
+    e.preventDefault();
+    try {
+      const result = await fetch(`/api/programs/${programId}/workouts`, {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify({ name: workoutName }),
+      });
+    } catch (error) {
+      console.error("Error adding workout:", error);
+    }
+  };
+
+  if (loading) {
+    return (
+      <div className="flex min-h-screen items-center justify-center bg-zinc-50 font-sans dark:bg-black">
+        <h1>Загрузка</h1>
+      </div>
+    );
+  }
+  return (
+    <div className="min-h-screen bg-black text-white p-4">
+      <h1 className="text-2xl font-bold mb-6">тренировки</h1>
+
+      {workouts.length === 0 ? (
+        <p>Тренировок нет</p>
+      ) : (
+        <div>
+          <h1>Тренировки</h1>
+          <button
+            onClick={() => {
+              setAddWorkoutOpen(true);
+            }}
+          >
+            + добавить
+          </button>
+          <ul>
+            {workouts.map((item) => (
+              <li key={item.id} className="border-b border-gray-700 py-4">
+                <Link href={`/workouts/${item.id}`}>
+                  <h2 className="font-bold text-lg">{item.name}</h2>
+                </Link>
+              </li>
+            ))}
+          </ul>
+        </div>
+      )}
+      {addWorkoutOpen && (
+        <div className="modal">
+          <h2>Добавить тренировку</h2>
+          <form onSubmit={(e) => {handleAddWorkout(e)}}>
+            <input type="text" placeholder="Название тренировки" onChange={(e) => {setWorkoutName(e.target.value)}} />
+            <button type="submit">Добавить</button>
+          </form>
+        </div>
+      )}
+    </div>
+  );
+}

@@ -53,6 +53,8 @@ services:
     restart: unless-stopped
     env_file:
       - ./.env
+    environment:
+      NEXT_PUBLIC_URL: ${NEXT_PUBLIC_URL}
     expose:
       - "3000"
     depends_on:
