@@ -41,7 +41,7 @@ async def start(update: Update, context: ContextTypes.DEFAULT_TYPE) -> int:
         keyboard = [
             [InlineKeyboardButton("Программы тренировок", callback_data="programs")],
             [InlineKeyboardButton("Профиль", callback_data="profile")],
-            [InlineKeyboardButton(web_app=WebAppInfo(url=WEBAPP_URL), text="Веб-версия")],
+            [InlineKeyboardButton(web_app=WebAppInfo(url=WEBAPP_URL+"/programs"), text="Веб-версия")],
         ]
         await context.bot.send_message(
             chat_id=chat_id,

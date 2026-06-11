@@ -9,6 +9,12 @@ type Workout = {
   name: string;
 };
 
+type ProgramDetail = {
+  id: number;
+  name: string;
+  description: string;
+};
+
 export default function ProgramPageDetail() {
   const [loading, setLoading] = useState(true);
   const [workouts, setWorkouts] = useState<Workout[]>([]);
@@ -16,6 +22,7 @@ export default function ProgramPageDetail() {
   const [workoutName, setWorkoutName] = useState("");
   const params = useParams();
   const programId = params.id;
+  const [program, setProgram] = useState<ProgramDetail | null>(null);
 
   useEffect(() => {
     const fetchData = async () => {
@@ -25,6 +32,13 @@ export default function ProgramPageDetail() {
       }
       const data: Workout[] = await result.json();
       setWorkouts(data);
+
+      const programResult = await fetch(`/api/programs/${programId}`);
+      if (!programResult.ok) {
+        throw new Error(`API Error: ${programResult.status}`);
+      }
+      const programData: ProgramDetail = await programResult.json();
+      setProgram(programData);
       setLoading(false);
       const tg = (window as any).Telegram?.WebApp;
 
@@ -37,7 +51,20 @@ export default function ProgramPageDetail() {
 
     fetchData();
   }, []);
-
+  const handleDeleteProgram = async () => {
+    try {
+      const result = await fetch(`/api/programs/${programId}`, {
+        method: "DELETE",
+      });
+      if (!result.ok) {
+        throw new Error(`API Error: ${result.status}`);
+      }
+      // После успешного удаления можно перенаправить пользователя на список программ
+      window.location.href = "/programs";
+    } catch (error) {
+      console.error("Error deleting program:", error);
+    }
+  };
   const handleAddWorkout = async (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault();
     try {
@@ -62,7 +89,10 @@ export default function ProgramPageDetail() {
   }
   return (
     <div className="min-h-screen bg-black text-white p-4">
-      <h1 className="text-2xl font-bold mb-6">тренировки</h1>
+      <Link href={`/programs`}>Назад к программам</Link>
+      <h1 className="text-2xl font-bold mb-6">{program?.name}</h1>
+      <button onClick={() => {handleDeleteProgram()}}>удалить</button>
+      <button onClick={() => {handleUpdateProgram()}}>обновить</button>
 
       {workouts.length === 0 ? (
         <p>Тренировок нет</p>

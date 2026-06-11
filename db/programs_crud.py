@@ -1,6 +1,6 @@
 from db.database import get_session
 from db.models import User, Program
-from sqlalchemy import select
+from sqlalchemy import select, update
 from sqlalchemy.orm import selectinload
 from typing import Optional
 
@@ -52,12 +52,31 @@ async def delete_program_crud(program_id: int) -> None:
 
 async def get_program(program_id: int) -> Optional[Program]:
     async with get_session() as session:
-        program = (
-            await session.execute(
-                select(Program).where(Program.id == program_id)
-            )
-        ).scalars().first()
+        stmt = (
+            select(Program)
+            .where(Program.id == program_id)
+            .options(selectinload(Program.workouts))
+        )
+        result = await session.execute(stmt)
+        program = result.scalars().first()
     return program
+
+async def update_program(program_id: int, name: str = None, description: str = None):
+    async with get_session() as session:
+        stmt = (
+            select(Program)
+            .where(Program.id == program_id)
+            .options(selectinload(Program.workouts))
+        )
+        result = await session.execute(stmt)
+        program = result.scalars().first()
+        if name:
+            program.name = name
+        if description:
+            program.description = description
+        await session.commit()
+        await session.refresh(program)
+        return program
 
 
 

@@ -85,6 +85,10 @@ export default function Home() {
           ))}
         </ul>
       )}
+
+      <Link href={`/programs`}>Программы</Link> 
+      <Link href={`/stats`}>Статистика</Link> 
+      <Link href={`/profile`}>Профиль</Link> 
     </div>
   );
 }
