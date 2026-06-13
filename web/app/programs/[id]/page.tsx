@@ -12,7 +12,7 @@ type Workout = {
 type ProgramDetail = {
   id: number;
   name: string;
-  description: string;
+  description: string | null;
 };
 
 export default function ProgramPageDetail() {
@@ -23,6 +23,10 @@ export default function ProgramPageDetail() {
   const params = useParams();
   const programId = params.id;
   const [program, setProgram] = useState<ProgramDetail | null>(null);
+  const [updateProgramOpen, setUpdateProgramOpen] = useState(false);
+  const [programName, setProgramName] = useState("");
+  const [programDescription, setProgramDescription] = useState("");
+
 
   useEffect(() => {
     const fetchData = async () => {
@@ -39,6 +43,8 @@ export default function ProgramPageDetail() {
       }
       const programData: ProgramDetail = await programResult.json();
       setProgram(programData);
+      setProgramName(programData.name);
+      setProgramDescription(programData.description || "");
       setLoading(false);
       const tg = (window as any).Telegram?.WebApp;
 
@@ -59,7 +65,6 @@ export default function ProgramPageDetail() {
       if (!result.ok) {
         throw new Error(`API Error: ${result.status}`);
       }
-      // После успешного удаления можно перенаправить пользователя на список программ
       window.location.href = "/programs";
     } catch (error) {
       console.error("Error deleting program:", error);
@@ -79,6 +84,32 @@ export default function ProgramPageDetail() {
       console.error("Error adding workout:", error);
     }
   };
+  const handleUpdateProgram = async (e?: React.FormEvent<HTMLFormElement>) => {
+    e?.preventDefault();
+    try {
+      const result = await fetch(`/api/programs/${programId}`, {
+        method: "PUT", // или PATCH, если у тебя PATCH в API
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify({
+          name: programName,
+          description: programDescription,
+        }),
+      });
+
+      if (!result.ok) {
+        throw new Error(`API Error: ${result.status}`);
+      }
+
+      const updatedProgram = await result.json();
+
+      setProgram(updatedProgram);
+      setUpdateProgramOpen(false);
+    } catch (error) {
+      console.error("Error updating program:", error);
+    }
+  };
 
   if (loading) {
     return (
@@ -92,7 +123,13 @@ export default function ProgramPageDetail() {
       <Link href={`/programs`}>Назад к программам</Link>
       <h1 className="text-2xl font-bold mb-6">{program?.name}</h1>
       <button onClick={() => {handleDeleteProgram()}}>удалить</button>
-      <button onClick={() => {handleUpdateProgram()}}>обновить</button>
+      <button
+        onClick={() => {
+          setUpdateProgramOpen(true);
+        }}
+      >
+        обновить
+      </button>
 
       {workouts.length === 0 ? (
         <p>Тренировок нет</p>
@@ -123,6 +160,35 @@ export default function ProgramPageDetail() {
           <form onSubmit={(e) => {handleAddWorkout(e)}}>
             <input type="text" placeholder="Название тренировки" onChange={(e) => {setWorkoutName(e.target.value)}} />
             <button type="submit">Добавить</button>
+          </form>
+        </div>
+      )}
+      {updateProgramOpen && (
+        <div className="modal">
+          <h2>Обновить программу</h2>
+
+          <form onSubmit={handleUpdateProgram}>
+            <input
+              type="text"
+              placeholder="Название программы"
+              value={programName}
+              onChange={(e) => setProgramName(e.target.value)}
+            />
+
+            <textarea
+              placeholder="Описание программы"
+              value={programDescription}
+              onChange={(e) => setProgramDescription(e.target.value)}
+            />
+
+            <button type="submit">Сохранить</button>
+
+            <button
+              type="button"
+              onClick={() => setUpdateProgramOpen(false)}
+            >
+              Отмена
+            </button>
           </form>
         </div>
       )}

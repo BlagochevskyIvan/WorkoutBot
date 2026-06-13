@@ -69,7 +69,7 @@ export default function Home() {
       <h1 className="text-2xl font-bold mb-6">Программы тренировок</h1>
 
       {programs.length === 0 ? (
-        <p>Тренировок нет</p>
+        <p>Программ нет</p>
       ) : (
         <ul>
           {programs.map((item) => (

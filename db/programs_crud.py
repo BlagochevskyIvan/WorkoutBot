@@ -61,21 +61,30 @@ async def get_program(program_id: int) -> Optional[Program]:
         program = result.scalars().first()
     return program
 
-async def update_program(program_id: int, name: str = None, description: str = None):
+async def update_program(
+    program_id: int,
+    name: str | None = None,
+    description: str | None = None,
+):
     async with get_session() as session:
         stmt = (
             select(Program)
             .where(Program.id == program_id)
             .options(selectinload(Program.workouts))
         )
+
         result = await session.execute(stmt)
         program = result.scalars().first()
-        if name:
+
+        if name is not None:
             program.name = name
-        if description:
+
+        if description is not None:
             program.description = description
+
         await session.commit()
         await session.refresh(program)
+
         return program
 
 
