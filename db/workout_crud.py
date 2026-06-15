@@ -58,3 +58,29 @@ async def get_workout(workout_id: int) -> Optional[Workout]:
             )
         ).scalars().first()
     return workout
+
+
+async def update_workout(
+    workout_id: int,
+    name: str | None = None,
+):
+    async with get_session() as session:
+        stmt = (
+            select(Workout)
+            .where(Workout.id == workout_id)
+            .options(selectinload(Workout.exercises))
+        )
+
+        result = await session.execute(stmt)
+        workout = result.scalars().first()
+
+        if workout is None:
+            return None
+
+        if name is not None:
+            workout.name = name
+
+        await session.commit()
+        await session.refresh(workout)
+
+        return workout

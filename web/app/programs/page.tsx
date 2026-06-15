@@ -41,6 +41,22 @@ export default function Home() {
 
         // Получаем массив тренировок
         const data: Program[] = await result.json();
+        const programsWithDetails = await Promise.all(
+          data.map(async (program) => {
+            const res = await fetch(
+              `${URL}/api/programs/${program.id}`
+            );
+
+            const details = await res.json();
+
+            return {
+              ...program,
+              workouts: details.workouts ?? [],
+            };
+          })
+        );
+
+        setPrograms(programsWithDetails);
 
         console.log("PROGRAMS:", data);
 

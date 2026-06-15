@@ -5,10 +5,12 @@ from fastapi.responses import PlainTextResponse, FileResponse, JSONResponse
 
 from db.user_crud import get_user_crud
 from db.programs_crud import get_programs, create_program, get_program, delete_program_crud, update_program
-from db.workout_crud import get_workouts, create_workout
+from db.workout_crud import get_workouts, create_workout, delete_workout_crud, get_workout, update_workout
+from db.exercise_crud import get_exercises
 from server.schemas.user import UserProfileResponse
 from server.schemas.program import ProgramResponse, ProgramCreate, ProgramDetailResponse
 from server.schemas.workout import WorkoutResponse, WorkoutCreate
+from server.schemas.exercise import ExerciseResponse
 
 from telegram import Update
 from config.cp_config import (
@@ -75,3 +77,33 @@ async def delete_program_js(program_id:int):
 async def update_program_js(program_id:int, body:ProgramCreate):
     program = await update_program(program_id, body.name, body.description)
     return program
+
+@router.delete('/workouts/{workout_id}')
+async def delete_workout_js(workout_id: int):
+    await delete_workout_crud(workout_id)
+    return Response(status_code=status.HTTP_204_NO_CONTENT)
+
+@router.get('/workouts/{workout_id}', response_model=WorkoutResponse)
+async def get_workout_detail_js(workout_id: int):
+    workout = await get_workout(workout_id)
+    return workout
+
+
+@router.get('/workouts/{workout_id}/exercises',
+            response_model=list[ExerciseResponse])
+async def get_workout_exercises_js(workout_id: int):
+    exercises = await get_exercises(workout_id)
+    return exercises
+
+
+@router.put('/workouts/{workout_id}',
+            response_model=WorkoutResponse)
+async def update_workout_js(
+    workout_id: int,
+    body: WorkoutCreate
+):
+    workout = await update_workout(
+        workout_id,
+        body.name
+    )
+    return workout
