@@ -1,4 +1,5 @@
 "use client";
+import { apiFetch } from "@/lib/api";
 import Image from "next/image";
 import { useEffect, useState } from "react";
 
@@ -25,7 +26,7 @@ export default function Home() {
     
       const user = tg.initDataUnsafe?.user;
      
-      const result = await fetch(`/api/me?telegram_id=${user.id}`);
+      const result = await apiFetch('/api/me');
       if (!result.ok) {
         throw new Error(`API Error: ${result.status}`);
       }

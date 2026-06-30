@@ -4,6 +4,7 @@ import { useEffect, useState } from "react";
 import Link from "next/link";
 import { getTelegramWebApp } from "@/lib/telegram";
 import { useTelegramUser } from "@/hooks/useTelegramUser";
+import { apiFetch } from "@/lib/api";
 
 type Program = {
   id: number;
@@ -31,9 +32,7 @@ export default function Home() {
         console.log("USER:", user);
         const URL = process.env.NEXT_PUBLIC_URL || "http://localhost:8000";
 
-        const result = await fetch(
-          `${URL}/api/programs?telegram_id=${user.id}`,
-        );
+        const result = await apiFetch('/api/programs')
 
         if (!result.ok) {
           throw new Error(`API Error: ${result.status}`);

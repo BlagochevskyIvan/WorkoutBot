@@ -1,7 +1,8 @@
-from fastapi import APIRouter
+from fastapi import APIRouter, Depends
 
 from fastapi import Request, Response, status
 from fastapi.responses import PlainTextResponse, FileResponse, JSONResponse
+from fastapi.exceptions import HTTPException
 
 from db.user_crud import get_user_crud
 from db.programs_crud import get_programs, create_program, get_program, delete_program_crud, update_program
@@ -11,6 +12,7 @@ from server.schemas.user import UserProfileResponse
 from server.schemas.program import ProgramResponse, ProgramCreate, ProgramDetailResponse
 from server.schemas.workout import WorkoutResponse, WorkoutCreate
 from server.schemas.exercise import ExerciseResponse
+from server.dependency.auth import get_current_telegram_id
 
 from telegram import Update
 from config.cp_config import (
@@ -32,18 +34,18 @@ async def get_user2():
     logger.info('мы')
     return JSONResponse({'name':'vanya2'})
 
-
-#url/api/me?telegram_id=1234
 @router.get('/me')
-async def get_me(telegram_id:int):
+async def get_me(telegram_id:int = Depends(get_current_telegram_id)):
     user = await get_user_crud(telegram_id)
-    logger.info(user.username)
-
+    if not user:
+        raise HTTPException(status_code=404, detail='User not found')
     return UserProfileResponse.model_validate(user)
 
 @router.get('/programs', response_model=list[ProgramResponse])
-async def get_programs_js(telegram_id:int):
+async def get_programs_js(telegram_id:int = Depends(get_current_telegram_id)):
     programs = await get_programs(telegram_id)
+    if not programs:
+        raise HTTPException(status_code=404, detail='Programs not found')
     return programs
 
 @router.post('/programs', response_model=ProgramResponse)
@@ -52,7 +54,7 @@ async def add_program(telegram_id:int, body:ProgramCreate):
     return program
 
 @router.get('/programs/{program_id}', response_model=ProgramDetailResponse)
-async def get_program_js(program_id:int):
+async def get_program_js(program_id:int): 
     logger.info(f"Получен запрос на получение программы с id {program_id}")
     program = await get_program(program_id)
     return program
