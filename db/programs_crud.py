@@ -50,13 +50,15 @@ async def delete_program_crud(program_id: int) -> None:
         await session.delete(program)
         await session.commit()
 
-async def get_program(program_id: int) -> Optional[Program]:
+async def get_program(program_id: int, telegram_id: int = None) -> Optional[Program]:
     async with get_session() as session:
         stmt = (
             select(Program)
             .where(Program.id == program_id)
             .options(selectinload(Program.workouts))
         )
+        if telegram_id:
+            stmt = stmt.join(Program.owner).where(User.telegram_id == telegram_id)
         result = await session.execute(stmt)
         program = result.scalars().first()
     return program

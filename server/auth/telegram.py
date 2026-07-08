@@ -49,6 +49,7 @@ def _validate_init_data(init_data: str, max_age_seconds: int = 86400) -> dict[st
 
 def get_telegram_user_id(init_data: str) -> int:
     """Из проверенной initData достаём telegram_id юзера."""
+    logger.info(init_data)
     parsed = _validate_init_data(init_data)
     user_raw = parsed.get("user")
 
@@ -57,6 +58,7 @@ def get_telegram_user_id(init_data: str) -> int:
 
     user = json.loads(user_raw)
     user_id = user.get("id")
+    
 
     if not user_id:
         raise HTTPException(status_code=401, detail="Нет id в user")

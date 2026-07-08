@@ -54,9 +54,11 @@ async def add_program(telegram_id:int, body:ProgramCreate):
     return program
 
 @router.get('/programs/{program_id}', response_model=ProgramDetailResponse)
-async def get_program_js(program_id:int): 
+async def get_program_js(program_id:int, telegram_id:int = Depends(get_current_telegram_id)):
     logger.info(f"Получен запрос на получение программы с id {program_id}")
-    program = await get_program(program_id)
+    program = await get_program(program_id, telegram_id)
+    if not program:
+        raise HTTPException(status_code=404, detail='Program not found')
     return program
 
 @router.get('/programs/{program_id}/workouts', response_model=list[WorkoutResponse])
