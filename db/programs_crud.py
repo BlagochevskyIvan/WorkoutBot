@@ -36,8 +36,15 @@ async def get_programs(telegram_id: int) -> list[Program]:
 
         return user.programs
     
-async def delete_program_crud(program_id: int) -> None:
+async def delete_program_crud(program_id: int, telegram_id: int = None) -> None:
     async with get_session() as session:
+        stmt = (
+            select(Program)
+            .where(Program.id == program_id)
+        )
+        if telegram_id:
+            stmt = stmt.join(Program.owner).where(User.telegram_id == telegram_id)
+
         program = (
             await session.execute(
                 select(Program).where(Program.id == program_id)
@@ -67,6 +74,7 @@ async def update_program(
     program_id: int,
     name: str | None = None,
     description: str | None = None,
+    telegram_id: int | None = None
 ):
     async with get_session() as session:
         stmt = (
@@ -74,6 +82,8 @@ async def update_program(
             .where(Program.id == program_id)
             .options(selectinload(Program.workouts))
         )
+        if telegram_id:
+            stmt = stmt.join(Program.owner).where(User.telegram_id == telegram_id)
 
         result = await session.execute(stmt)
         program = result.scalars().first()

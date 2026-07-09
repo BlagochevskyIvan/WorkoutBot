@@ -63,40 +63,40 @@ async def get_program_js(program_id:int, telegram_id:int = Depends(get_current_t
 
 @router.get('/programs/{program_id}/workouts', response_model=list[WorkoutResponse])
 async def get_workout_js(program_id:int, telegram_id:int = Depends(get_current_telegram_id)):
-    workouts = await get_workouts(program_id)
+    workouts = await get_workouts(program_id, telegram_id)
     return workouts
 
 @router.post('/programs/{program_id}/workouts', response_model=WorkoutResponse)
 async def add_workout(program_id:int, body:WorkoutCreate, telegram_id:int = Depends(get_current_telegram_id)):
-    workout = await create_workout(program_id, body.name)
+    workout = await create_workout(program_id, body.name, telegram_id)
     return workout
 
 
 @router.delete('/programs/{program_id}')
 async def delete_program_js(program_id:int, telegram_id:int = Depends(get_current_telegram_id)):
-    await delete_program_crud(program_id)
+    await delete_program_crud(program_id, telegram_id)
     return Response(status_code=status.HTTP_204_NO_CONTENT)
 
 @router.put('/programs/{program_id}')
 async def update_program_js(program_id:int, body:ProgramCreate, telegram_id:int = Depends(get_current_telegram_id)):
-    program = await update_program(program_id, body.name, body.description)
+    program = await update_program(program_id, body.name, body.description, telegram_id)
     return program
 
 @router.delete('/workouts/{workout_id}')
 async def delete_workout_js(workout_id: int, telegram_id:int = Depends(get_current_telegram_id)):
-    await delete_workout_crud(workout_id)
+    await delete_workout_crud(workout_id, telegram_id)
     return Response(status_code=status.HTTP_204_NO_CONTENT)
 
 @router.get('/workouts/{workout_id}', response_model=WorkoutResponse)
 async def get_workout_detail_js(workout_id: int, telegram_id:int = Depends(get_current_telegram_id)):
-    workout = await get_workout(workout_id)
+    workout = await get_workout(workout_id, telegram_id)
     return workout
 
 
 @router.get('/workouts/{workout_id}/exercises',
             response_model=list[ExerciseResponse])
 async def get_workout_exercises_js(workout_id: int, telegram_id:int = Depends(get_current_telegram_id)):
-    exercises = await get_exercises(workout_id)
+    exercises = await get_exercises(workout_id, telegram_id)
     return exercises
 
 
@@ -109,6 +109,7 @@ async def update_workout_js(
 ):
     workout = await update_workout(
         workout_id,
-        body.name
+        body.name,
+        telegram_id
     )
     return workout
