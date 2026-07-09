@@ -39,7 +39,6 @@ def _validate_init_data(init_data: str, max_age_seconds: int = 86400) -> dict[st
     if calculated_hash != received_hash:
         raise HTTPException(status_code=401, detail="Неверная подпись initData")
 
-    # initData не старше суток (опционально, но полезно)
     auth_date = int(parsed.get("auth_date", "0"))
     if auth_date and time.time() - auth_date > max_age_seconds:
         raise HTTPException(status_code=401, detail="initData устарела")
