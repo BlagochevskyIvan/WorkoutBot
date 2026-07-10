@@ -7,11 +7,11 @@ from fastapi.exceptions import HTTPException
 from db.user_crud import get_user_crud
 from db.programs_crud import get_programs, create_program, get_program, delete_program_crud, update_program
 from db.workout_crud import get_workouts, create_workout, delete_workout_crud, get_workout, update_workout
-from db.exercise_crud import get_exercises
+from db.exercise_crud import get_exercises, create_exercise, delete_exercise_crud, get_exercise
 from server.schemas.user import UserProfileResponse
 from server.schemas.program import ProgramResponse, ProgramCreate, ProgramDetailResponse
 from server.schemas.workout import WorkoutResponse, WorkoutCreate
-from server.schemas.exercise import ExerciseResponse
+from server.schemas.exercise import ExerciseResponse, ExerciseCreate
 from server.dependency.auth import get_current_telegram_id
 
 from telegram import Update
@@ -113,3 +113,8 @@ async def update_workout_js(
         telegram_id
     )
     return workout
+
+@router.post('/workouts/{workout_id}/exercises', response_model=ExerciseResponse)
+async def add_exercise(workout_id:int, body:ExerciseCreate, telegram_id:int = Depends(get_current_telegram_id)):
+    exercise = await create_exercise(workout_id, body.name, telegram_id)
+    return exercise

@@ -11,7 +11,7 @@ export async function apiFetch(
   }
 
   const headers = new Headers(options.headers);
-  headers.set("Authorization", initData);
+  headers.set("X-Telegram-Auth", initData);
 
   if (options.body && !headers.has("Content-Type")) {
     headers.set("Content-Type", "application/json");
