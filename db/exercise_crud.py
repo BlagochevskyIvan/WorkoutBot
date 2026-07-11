@@ -1,7 +1,6 @@
 from db.database import get_session
 from db.models import Workout, Exercise, User, Program
 from sqlalchemy import select
-from sqlalchemy.orm import selectinload
 from typing import Optional
 
 
@@ -11,12 +10,13 @@ async def create_exercise(
     async with get_session() as session:
         stmt = (
             select(Workout)
-            .where(Workout.id == workout_id)
             .join(Workout.program)
             .join(Program.owner)
-            .where(User.telegram_id == telegram_id)
+            .where(Workout.id == workout_id)
         )
-        
+        if telegram_id is not None:
+            stmt = stmt.where(User.telegram_id == telegram_id)
+
         result = await session.execute(stmt)
         workout = result.scalars().first()
 
@@ -34,37 +34,36 @@ async def create_exercise(
 async def get_exercises(workout_id: int, telegram_id: int = None) -> list[Exercise]:
     async with get_session() as session:
         stmt = (
-            select(Workout)
-            .where(Workout.id == workout_id)
-            .options(selectinload(Workout.exercises))
+            select(Exercise)
+            .join(Exercise.workout)
+            .join(Workout.program)
+            .join(Program.owner)
+            .where(Exercise.workout_id == workout_id)
         )
-        if telegram_id:
-            stmt = stmt.join(Workout.owner).where(User.telegram_id == telegram_id)
+        if telegram_id is not None:
+            stmt = stmt.where(User.telegram_id == telegram_id)
 
         result = await session.execute(stmt)
-        workout = result.scalar_one_or_none()
-
-        if not workout:
-            return []
-
-        return workout.exercises
+        return list(result.scalars().all())
 
 
 async def delete_exercise_crud(exercise_id: int, telegram_id: int = None) -> None:
     async with get_session() as session:
-        exercise = (
-            (await session.execute(select(Exercise).where(Exercise.id == exercise_id)))
-            .scalars()
-            .first()
+        stmt = (
+            select(Exercise, User.telegram_id)
+            .join(Exercise.workout)
+            .join(Workout.program)
+            .join(Program.owner)
+            .where(Exercise.id == exercise_id)
         )
-        if (
-            telegram_id
-            and exercise
-            and exercise.workout.owner.telegram_id != telegram_id
-        ):
-            raise ValueError("User does not own this exercise")
-        if not exercise:
+
+        row = (await session.execute(stmt)).first()
+        if not row:
             return
+
+        exercise, owner_telegram_id = row
+        if telegram_id is not None and owner_telegram_id != telegram_id:
+            raise ValueError("User does not own this exercise")
 
         await session.delete(exercise)
         await session.commit()
@@ -72,12 +71,14 @@ async def delete_exercise_crud(exercise_id: int, telegram_id: int = None) -> Non
 
 async def get_exercise(ex_id: int, telegram_id: int = None) -> Optional[Exercise]:
     async with get_session() as session:
-        stmt = select(Exercise).where(Exercise.id == ex_id)
-        if telegram_id:
-            stmt = (
-                stmt.join(Exercise.workout)
-                .join(Workout.owner)
-                .where(User.telegram_id == telegram_id)
-            )
-        exercise = (await session.execute(stmt)).scalars().first()
-    return exercise
+        stmt = (
+            select(Exercise)
+            .join(Exercise.workout)
+            .join(Workout.program)
+            .join(Program.owner)
+            .where(Exercise.id == ex_id)
+        )
+        if telegram_id is not None:
+            stmt = stmt.where(User.telegram_id == telegram_id)
+
+        return (await session.execute(stmt)).scalars().first()
