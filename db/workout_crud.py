@@ -1,25 +1,58 @@
 from db.database import get_session
 from db.models import Program, Workout, User
-from sqlalchemy import select
+from sqlalchemy import func, select
 from sqlalchemy.orm import selectinload
 from typing import Optional
 
 async def create_workout(program_id: int, name: str, telegram_id: int = None) -> Workout:
     async with get_session() as session:
         stmt = select(Program).where(Program.id == program_id)
+        if telegram_id:
+            stmt = stmt.join(Program.owner).where(User.telegram_id == telegram_id)
         result = await session.execute(stmt)
         program = result.scalars().first()
 
         if not program:
             raise ValueError("Program not found")
-        if telegram_id and program.owner.telegram_id != telegram_id:
-            raise ValueError("User does not own this program")
-        workout = Workout(name=name, program=program)
+
+        position = await session.scalar(
+            select(func.coalesce(func.max(Workout.position), -1) + 1)
+            .where(Workout.program_id == program_id)
+        )
+        workout = Workout(name=name, program=program, position=position)
         session.add(workout)
         await session.commit()
         await session.refresh(workout)
 
         return workout
+
+
+async def reorder_workouts(
+    program_id: int,
+    workout_ids: list[int],
+    telegram_id: int = None
+) -> None:
+    async with get_session() as session:
+        stmt = (
+            select(Workout)
+            .where(Workout.program_id == program_id)
+        )
+        if telegram_id:
+            stmt = (
+                stmt.join(Workout.program)
+                .join(Program.owner)
+                .where(User.telegram_id == telegram_id)
+            )
+
+        workouts = list((await session.execute(stmt)).scalars().all())
+        if len(workout_ids) != len(workouts) or set(workout_ids) != {workout.id for workout in workouts}:
+            raise ValueError("Invalid workout order")
+
+        workouts_by_id = {workout.id: workout for workout in workouts}
+        for position, workout_id in enumerate(workout_ids):
+            workouts_by_id[workout_id].position = position
+
+        await session.commit()
     
 async def get_workouts(program_id: int, telegram_id: int = None) -> list[Workout]:
     async with get_session() as session:
@@ -42,13 +75,11 @@ async def get_workouts(program_id: int, telegram_id: int = None) -> list[Workout
     
 async def delete_workout_crud(workout_id: int, telegram_id: int = None) -> None:
     async with get_session() as session:
-        workout = (
-            await session.execute(
-                select(Workout).where(Workout.id == workout_id)
-            )
-        ).scalars().first()
-        if telegram_id and workout and workout.program.owner.telegram_id != telegram_id:
-            raise ValueError("User does not own this workout")
+        stmt = select(Workout).where(Workout.id == workout_id)
+        if telegram_id:
+            stmt = stmt.join(Workout.program).join(Program.owner).where(User.telegram_id == telegram_id)
+
+        workout = (await session.execute(stmt)).scalars().first()
         if not workout:
             return
 
@@ -70,7 +101,7 @@ async def update_workout(
     workout_id: int,
     name: str | None = None,
     telegram_id: int = None
-):
+) -> Optional[Workout]:
     async with get_session() as session:
         stmt = (
             select(Workout)

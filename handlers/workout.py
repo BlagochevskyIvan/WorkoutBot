@@ -5,10 +5,20 @@ from db.workout_crud import get_workouts, create_workout, delete_workout_crud
 from db.programs_crud import get_program
 from config.states import MENU, GET_WORKOUT_NAME
 
+
+def workout_button_row(workout, index: int, total: int):
+    row = [InlineKeyboardButton(text=workout.name, callback_data=f"workout_{workout.id}")]
+    if index > 0:
+        row.append(InlineKeyboardButton(text="↑", callback_data=f"move_workout_{workout.id}_up"))
+    if index < total - 1:
+        row.append(InlineKeyboardButton(text="↓", callback_data=f"move_workout_{workout.id}_down"))
+    return row
+
+
 async def list_workouts(update: Update, context: ContextTypes.DEFAULT_TYPE) -> None:
     query = update.callback_query
     await query.answer()
-    if str(query.data) != "workouts":
+    if str(query.data).startswith("program_"):
         program_id = int(query.data.split("_")[1])
         context.user_data["program_id"] = program_id
     program_id = context.user_data["program_id"]
@@ -32,8 +42,8 @@ async def list_workouts(update: Update, context: ContextTypes.DEFAULT_TYPE) -> N
 
     keyboard.extend(
         [
-            [InlineKeyboardButton(text=workout.name, callback_data=f"workout_{workout.id}")]
-            for workout in workouts
+            workout_button_row(workout, index, len(workouts))
+            for index, workout in enumerate(workouts)
         ]
     )
     keyboard.extend(
@@ -110,8 +120,8 @@ async def delete_workout(update: Update, context: ContextTypes.DEFAULT_TYPE) -> 
 
     keyboard.extend(
         [
-            [InlineKeyboardButton(text=workout.name, callback_data=f"workout_{workout.id}")]
-            for workout in workouts
+            workout_button_row(workout, index, len(workouts))
+            for index, workout in enumerate(workouts)
         ]
     )
     keyboard.extend(

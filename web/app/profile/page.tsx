@@ -1,6 +1,6 @@
 "use client";
 import { apiFetch } from "@/lib/api";
-import Image from "next/image";
+import { getTelegramWebApp } from "@/lib/telegram";
 import { useEffect, useState } from "react";
 
 type UserProfile = {
@@ -16,16 +16,13 @@ export default function Home() {
   const [userData, setUserData] = useState<UserProfile | null>(null);
   useEffect(() => {
     async function fetchData() {
-      const tg = (window as any).Telegram?.WebApp;
+      const tg = getTelegramWebApp();
 
       if (!tg) {
         console.log("Открой приложение через тг");
         return;
       }
-      tg.ready();
-    
-      const user = tg.initDataUnsafe?.user;
-     
+
       const result = await apiFetch('/api/me');
       if (!result.ok) {
         throw new Error(`API Error: ${result.status}`);

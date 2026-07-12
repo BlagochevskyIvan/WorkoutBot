@@ -1,24 +1,41 @@
-import { initData } from "@tma.js/sdk-react";
-
 export type TelegramUser = {
-    id: number;
-    first_name?: string;
-    last_name?: string;
-    username?: string;
+  id: number;
+  first_name?: string;
+  last_name?: string;
+  username?: string;
+};
+
+type TelegramWebApp = {
+  ready: () => void;
+  expand: () => void;
+  initDataUnsafe?: {
+    user?: TelegramUser;
+  };
+};
+
+declare global {
+  interface Window {
+    Telegram?: {
+      WebApp?: TelegramWebApp;
+    };
+  }
 }
 
 export function getTelegramWebApp() {
-    const tg = (window as any).Telegram?.WebApp;
-    if (!tg) {
-          alert("Открой приложение через Telegram");
-          return;
-        }
-    tg?.ready();
-    tg?.expand();
-    return tg
+  if (typeof window === "undefined") {
+    return undefined;
+  }
+
+  const tg = window.Telegram?.WebApp;
+  if (!tg) {
+    return undefined;
+  }
+
+  tg.ready();
+  tg.expand();
+  return tg;
 }
 
 export function getTelegramUser() {
-    const tg = getTelegramWebApp();
-    return tg?.initDataUnsafe?.user
+  return getTelegramWebApp()?.initDataUnsafe?.user;
 }

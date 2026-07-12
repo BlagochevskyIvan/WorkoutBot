@@ -1,15 +1,18 @@
-import { getTelegramUser } from "@/lib/telegram";
-import { TelegramUser } from "@/lib/telegram";
+import { getTelegramUser, TelegramUser } from "@/lib/telegram";
 import { useEffect, useState } from "react";
 
 export function useTelegramUser() {
-    const[user, setUser] = useState<TelegramUser | null>(null);
-    const [ready, setReady] = useState(false)
+  const [user, setUser] = useState<TelegramUser | null>(null);
+  const [ready, setReady] = useState(false);
 
-    useEffect(() => {
-        setUser(getTelegramUser())
-        setReady(true)
-    }, [])
+  useEffect(() => {
+    const timer = window.setTimeout(() => {
+      setUser(getTelegramUser() || null);
+      setReady(true);
+    }, 0);
 
-    return {user, ready}
+    return () => window.clearTimeout(timer);
+  }, []);
+
+  return { user, ready };
 }

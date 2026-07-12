@@ -1,52 +1,39 @@
 "use client";
-import Image from "next/image";
-import { useEffect, useState } from "react";
+
+import Link from "next/link";
+
+import { useTelegramUser } from "@/hooks/useTelegramUser";
 
 export default function Home() {
-  const [userData, setUserData] = useState(null);
-  const [user2Data, setUser2Data] = useState(null);
+  const { user, ready } = useTelegramUser();
 
-  useEffect(() => {
-    const fetchData = async () => {
-      const res = await fetch(`/api/user`);
-      if (!res.ok) {
-        throw new Error(`API Error: ${res.status}`);
-      }
-      const data = await res.json();
-      setUserData(data);
-
-      const tg = (window as any).Telegram?.WebApp
-
-      if (!tg){
-        console.log('Открой приложение через тг')
-        return;
-      }
-      tg.ready()
-      const user = tg.initDataUnsafe?.user
-      setUserData(user.username)
-    };
-
-    fetchData();
-  }, []);
-
-  if (!userData) {
+  if (!ready) {
     return (
-      <div className="flex min-h-screen items-center justify-center bg-zinc-50 font-sans dark:bg-black">
-        <h1>Загрузка</h1>
-      </div>
+      <main className="flex min-h-screen items-center justify-center bg-black text-white">
+        Загрузка...
+      </main>
     );
   }
+
   return (
-    <div className="flex min-h-screen items-center justify-center bg-zinc-50 font-sans dark:bg-black">
-      <div className="text-center">
-        <h1 className="text-2xl font-bold mb-4">{userData}</h1>
-        <a href="/profile" className="text-blue-500 hover:underline">
+    <main className="flex min-h-screen items-center justify-center bg-black p-4 text-white">
+      <div className="w-full max-w-sm space-y-3 text-center">
+        <h1 className="mb-6 text-2xl font-bold">
+          {user?.username || user?.first_name || "WorkoutBot"}
+        </h1>
+        <Link
+          href="/programs"
+          className="block rounded-xl bg-white px-4 py-3 font-semibold text-black"
+        >
+          Программы тренировок
+        </Link>
+        <Link
+          href="/profile"
+          className="block rounded-xl border border-zinc-700 px-4 py-3"
+        >
           Профиль
-        </a>
-        <div>
-          <a href="/programs" className="text-blue-500 hover:underline"> Программы тренировок</a>
-        </div>
+        </Link>
       </div>
-    </div>
+    </main>
   );
 }

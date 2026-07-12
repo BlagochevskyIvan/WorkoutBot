@@ -20,6 +20,7 @@ from handlers.programs import list_programs, get_program_name, create_program_ha
 from handlers.workout import list_workouts, get_workout_name, create_workout_handler, delete_workout
 from handlers.exercise import list_exercises, get_exercise_name, create_exercise_handler, delete_exercise
 from handlers.set import list_sets, get_set_weight, get_set_reps, create_set_handler, get_set_info, delete_set, edit_set_weight, edit_set_reps, edit_set_handler
+from handlers.order import move_program, move_workout, move_exercise, move_set
 from handlers.workout_way import start_workout, workout_way
 
 
@@ -42,22 +43,26 @@ def create_bot_app():
                 CallbackQueryHandler(get_user, pattern="^profile$"),
                 CallbackQueryHandler(list_programs, pattern="^programs$"),
                 CallbackQueryHandler(get_program_name, pattern="^create_program$"),
-                CallbackQueryHandler(list_workouts, pattern="^program_\d+$"),
+                CallbackQueryHandler(list_workouts, pattern=r"^program_\d+$"),
                 CallbackQueryHandler(list_workouts, pattern="^workouts$"),
                 CallbackQueryHandler(get_workout_name, pattern="^create_workout$"),
-                CallbackQueryHandler(list_exercises, pattern="^workout_\d+$"),
+                CallbackQueryHandler(list_exercises, pattern=r"^workout_\d+$"),
                 CallbackQueryHandler(list_exercises, pattern="^exercises$"),
                 CallbackQueryHandler(get_exercise_name, pattern="^create_exercise$"),
-                CallbackQueryHandler(list_sets, pattern="^exercise_\d+$"),
+                CallbackQueryHandler(list_sets, pattern=r"^exercise_\d+$"),
                 CallbackQueryHandler(list_sets, pattern="^sets$"),
                 CallbackQueryHandler(get_set_weight, pattern="^create_set$"),
-                CallbackQueryHandler(get_set_info, pattern="^\d+set_\d+$"),
+                CallbackQueryHandler(get_set_info, pattern=r"^\d+set_\d+$"),
                 CallbackQueryHandler(start_workout, pattern="^start_workout$"),
                 CallbackQueryHandler(delete_set, pattern="^delete_set$"),
                 CallbackQueryHandler(delete_exercise, pattern="^delete_exercise$"),
                 CallbackQueryHandler(delete_workout, pattern="^delete_workout$"),
                 CallbackQueryHandler(delete_program, pattern="^delete_program$"),
-                CallbackQueryHandler(edit_set_weight, pattern="^edit_set$")
+                CallbackQueryHandler(edit_set_weight, pattern="^edit_set$"),
+                CallbackQueryHandler(move_program, pattern=r"^move_program_\d+_(up|down)$"),
+                CallbackQueryHandler(move_workout, pattern=r"^move_workout_\d+_(up|down)$"),
+                CallbackQueryHandler(move_exercise, pattern=r"^move_exercise_\d+_(up|down)$"),
+                CallbackQueryHandler(move_set, pattern=r"^move_set_\d+_(up|down)$"),
             ],
             PROFILE: [
                 CallbackQueryHandler(get_gender, pattern="^(male|female)$"),

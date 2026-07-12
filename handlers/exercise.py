@@ -5,10 +5,25 @@ from db.exercise_crud import get_exercises, create_exercise, delete_exercise_cru
 from db.workout_crud import get_workout
 from config.states import MENU, GET_EXERCISE_NAME
 
+
+def exercise_button_row(exercise, index: int, total: int):
+    row = [
+        InlineKeyboardButton(
+            text=f"{index + 1}. {exercise.name}",
+            callback_data=f"exercise_{exercise.id}"
+        )
+    ]
+    if index > 0:
+        row.append(InlineKeyboardButton(text="↑", callback_data=f"move_exercise_{exercise.id}_up"))
+    if index < total - 1:
+        row.append(InlineKeyboardButton(text="↓", callback_data=f"move_exercise_{exercise.id}_down"))
+    return row
+
+
 async def list_exercises(update: Update, context: ContextTypes.DEFAULT_TYPE) -> None:
     query = update.callback_query
     await query.answer()
-    if str(query.data) != "exercises":
+    if str(query.data).startswith("workout_"):
         workout_id = int(query.data.split("_")[1])
         context.user_data["workout_id"] = workout_id
     workout_id = context.user_data["workout_id"]
@@ -30,14 +45,10 @@ async def list_exercises(update: Update, context: ContextTypes.DEFAULT_TYPE) -> 
         )
         return MENU
 
-    num = 0
-    for exercise in exercises:
-        num += 1
-        keyboard.extend(
-            [
-                [InlineKeyboardButton(text=f"{num}. {exercise.name}", callback_data=f"exercise_{exercise.id}")]
-            ]
-        )
+    keyboard.extend(
+        exercise_button_row(exercise, index, len(exercises))
+        for index, exercise in enumerate(exercises)
+    )
 
     keyboard.extend(
         [
@@ -113,14 +124,10 @@ async def delete_exercise(update: Update, context: ContextTypes.DEFAULT_TYPE) ->
         )
         return MENU
 
-    num = 0
-    for exercise in exercises:
-        num += 1
-        keyboard.extend(
-            [
-                [InlineKeyboardButton(text=f"{num}. {exercise.name}", callback_data=f"exercise_{exercise.id}")]
-            ]
-        )
+    keyboard.extend(
+        exercise_button_row(exercise, index, len(exercises))
+        for index, exercise in enumerate(exercises)
+    )
 
     keyboard.extend(
         [
