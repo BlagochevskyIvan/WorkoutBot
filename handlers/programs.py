@@ -4,6 +4,16 @@ from telegram import InlineKeyboardButton, InlineKeyboardMarkup
 from db.programs_crud import get_programs, create_program, delete_program_crud
 from config.states import MENU, GET_PROGRAMM_NAME
 
+
+def program_button_row(program, index: int, total: int):
+    row = [InlineKeyboardButton(text=program.name, callback_data=f"program_{program.id}")]
+    if index > 0:
+        row.append(InlineKeyboardButton(text="↑", callback_data=f"move_program_{program.id}_up"))
+    if index < total - 1:
+        row.append(InlineKeyboardButton(text="↓", callback_data=f"move_program_{program.id}_down"))
+    return row
+
+
 async def list_programs(update: Update, context: ContextTypes.DEFAULT_TYPE) -> None:
     query = update.callback_query
     await query.answer()
@@ -27,8 +37,8 @@ async def list_programs(update: Update, context: ContextTypes.DEFAULT_TYPE) -> N
 
     keyboard.extend(
         [
-            [InlineKeyboardButton(text=program.name, callback_data=f"program_{program.id}")]
-            for program in programs
+            program_button_row(program, index, len(programs))
+            for index, program in enumerate(programs)
         ]
     )
     
@@ -105,8 +115,8 @@ async def delete_program(update: Update, context: ContextTypes.DEFAULT_TYPE) -> 
 
     keyboard.extend(
         [
-            [InlineKeyboardButton(text=program.name, callback_data=f"program_{program.id}")]
-            for program in programs
+            program_button_row(program, index, len(programs))
+            for index, program in enumerate(programs)
         ]
     )
     
@@ -125,4 +135,3 @@ async def delete_program(update: Update, context: ContextTypes.DEFAULT_TYPE) -> 
         reply_markup=reply_markup
     )
     return MENU
-

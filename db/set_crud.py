@@ -1,32 +1,68 @@
 from db.database import get_session
-from db.models import Exercise, Set
-from sqlalchemy import select, update
-from sqlalchemy.orm import selectinload
+from db.models import Exercise, Program, Set, User, Workout
+from sqlalchemy import func, select
 from typing import Optional
+from sqlalchemy.orm import selectinload
 
-async def create_set(exercise_id: int, weight: float, reps: int) -> Exercise:
+
+async def create_set(
+    exercise_id: int,
+    weight: float,
+    reps: int,
+    telegram_id: int = None
+) -> Set:
     async with get_session() as session:
-        stmt = select(Exercise).where(Exercise.id == exercise_id)
+        stmt = (
+            select(Exercise)
+            .where(Exercise.id == exercise_id)
+        )
+
+        if telegram_id:
+            stmt = (
+                stmt.join(Exercise.workout)
+                .join(Workout.program)
+                .join(Program.owner)
+                .where(User.telegram_id == telegram_id)
+            )
+
         result = await session.execute(stmt)
         exercise = result.scalars().first()
 
         if not exercise:
             raise ValueError("Exercise not found")
 
-        set = Set(weight=weight, reps=reps, exercise=exercise)
-        session.add(set)
+        position = await session.scalar(
+            select(func.coalesce(func.max(Set.position), -1) + 1)
+            .where(Set.exercise_id == exercise_id)
+        )
+        set_obj = Set(
+            weight=weight,
+            reps=reps,
+            exercise=exercise,
+            position=position
+        )
+        session.add(set_obj)
         await session.commit()
-        await session.refresh(set)
+        await session.refresh(set_obj)
 
-        return set
-    
-async def get_sets(exercise_id: int) -> list[Set]:
+        return set_obj
+
+
+async def get_sets(exercise_id: int, telegram_id: int = None) -> list[Set]:
     async with get_session() as session:
         stmt = (
             select(Exercise)
             .where(Exercise.id == exercise_id)
             .options(selectinload(Exercise.sets))
         )
+
+        if telegram_id:
+            stmt = (
+                stmt.join(Exercise.workout)
+                .join(Workout.program)
+                .join(Program.owner)
+                .where(User.telegram_id == telegram_id)
+            )
 
         result = await session.execute(stmt)
         exercise = result.scalars().first()
@@ -35,35 +71,110 @@ async def get_sets(exercise_id: int) -> list[Set]:
             return []
 
         return exercise.sets
-        
-async def delete_set_crud(set_id: int) -> None:
+
+
+async def reorder_sets(
+    exercise_id: int,
+    set_ids: list[int],
+    telegram_id: int = None
+) -> None:
     async with get_session() as session:
-        set = (
-            await session.execute(
-                select(Set).where(Set.id == set_id)
+        stmt = (
+            select(Set)
+            .where(Set.exercise_id == exercise_id)
+        )
+        if telegram_id:
+            stmt = (
+                stmt.join(Set.exercise)
+                .join(Exercise.workout)
+                .join(Workout.program)
+                .join(Program.owner)
+                .where(User.telegram_id == telegram_id)
             )
-        ).scalars().first()
 
-        if not set:
-            return
+        sets = list((await session.execute(stmt)).scalars().all())
+        if len(set_ids) != len(sets) or set(set_ids) != {set_obj.id for set_obj in sets}:
+            raise ValueError("Invalid set order")
 
-        await session.delete(set)
+        sets_by_id = {set_obj.id: set_obj for set_obj in sets}
+        for position, set_id in enumerate(set_ids):
+            sets_by_id[set_id].position = position
+
         await session.commit()
 
-async def get_set(set_id: int) -> Optional[Set]:
-    async with get_session() as session:
-        set = (
-            await session.execute(
-                select(Set).where(Set.id == set_id)
-            )
-        ).scalars().first()
-    return set
 
-async def edit_set(set_id: int, weight: float, reps: int):
+async def delete_set_crud(set_id: int, telegram_id: int = None) -> None:
     async with get_session() as session:
-        await session.execute(
-            update(Set)
-            .values(weight=weight, reps=reps)
+        stmt = (
+            select(Set)
             .where(Set.id == set_id)
         )
+
+        if telegram_id:
+            stmt = (
+                stmt.join(Set.exercise)
+                .join(Exercise.workout)
+                .join(Workout.program)
+                .join(Program.owner)
+                .where(User.telegram_id == telegram_id)
+            )
+
+        set_obj = (await session.execute(stmt)).scalars().first()
+
+        if not set_obj:
+            return
+
+        await session.delete(set_obj)
         await session.commit()
+
+
+async def get_set(set_id: int, telegram_id: int = None) -> Optional[Set]:
+    async with get_session() as session:
+        stmt = (
+            select(Set)
+            .where(Set.id == set_id)
+        )
+
+        if telegram_id:
+            stmt = (
+                stmt.join(Set.exercise)
+                .join(Exercise.workout)
+                .join(Workout.program)
+                .join(Program.owner)
+                .where(User.telegram_id == telegram_id)
+            )
+
+        return (await session.execute(stmt)).scalars().first()
+
+
+async def edit_set(
+    set_id: int,
+    weight: float,
+    reps: int,
+    telegram_id: int = None
+) -> Optional[Set]:
+    async with get_session() as session:
+        stmt = (
+            select(Set)
+            .where(Set.id == set_id)
+        )
+
+        if telegram_id:
+            stmt = (
+                stmt.join(Set.exercise)
+                .join(Exercise.workout)
+                .join(Workout.program)
+                .join(Program.owner)
+                .where(User.telegram_id == telegram_id)
+            )
+
+        set_obj = (await session.execute(stmt)).scalars().first()
+
+        if not set_obj:
+            return
+
+        set_obj.weight = weight
+        set_obj.reps = reps
+        await session.commit()
+        await session.refresh(set_obj)
+        return set_obj

@@ -19,7 +19,8 @@ class User(Base):
     programs = relationship(
         "Program",
         back_populates="owner",
-        cascade="all, delete-orphan"
+        cascade="all, delete-orphan",
+        order_by=lambda: (Program.position, Program.id)
     )
 
     fact_workouts = relationship("FactWorkout", back_populates="user", cascade="all, delete-orphan")
@@ -32,12 +33,14 @@ class Program(Base):
     description = Column(String, nullable=True)
     owner_id = Column(Integer, ForeignKey("users.id"), nullable=True)
     is_template = Column(Boolean, nullable=False, default=False)
+    position = Column(Integer, nullable=False, default=0, server_default="0")
 
     owner = relationship("User", back_populates="programs")
     workouts = relationship(
         "Workout",
         back_populates="program",
-        cascade="all, delete-orphan"
+        cascade="all, delete-orphan",
+        order_by=lambda: (Workout.position, Workout.id)
     )
 
 class Workout(Base):
@@ -46,12 +49,14 @@ class Workout(Base):
     id = Column(Integer, primary_key=True, autoincrement=True)
     program_id = Column(Integer, ForeignKey("programs.id"), nullable=False)
     name = Column(String, nullable=False)
+    position = Column(Integer, nullable=False, default=0, server_default="0")
 
     program = relationship("Program", back_populates="workouts")
     exercises = relationship(
         "Exercise",
         back_populates="workout",
-        cascade="all, delete-orphan"
+        cascade="all, delete-orphan",
+        order_by=lambda: (Exercise.position, Exercise.id)
     )
     fact_workouts = relationship("FactWorkout", back_populates="workout", cascade="all, delete-orphan")
 
@@ -61,12 +66,14 @@ class Exercise(Base):
     id = Column(Integer, primary_key=True, autoincrement=True)
     workout_id = Column(Integer, ForeignKey("workouts.id"), nullable=False)
     name = Column(String, nullable=False)
+    position = Column(Integer, nullable=False, default=0, server_default="0")
 
     workout = relationship("Workout", back_populates="exercises")
     sets = relationship(
         "Set",
         back_populates="exercise",
-        cascade="all, delete-orphan"
+        cascade="all, delete-orphan",
+        order_by=lambda: (Set.position, Set.id)
     )
 
 class Set(Base):
@@ -76,6 +83,7 @@ class Set(Base):
     exercise_id = Column(Integer, ForeignKey("exercises.id"), nullable=False)
     weight = Column(Float, nullable=True)
     reps = Column(Integer, nullable=True)
+    position = Column(Integer, nullable=False, default=0, server_default="0")
     
     exercise = relationship("Exercise", back_populates="sets")
 
@@ -115,4 +123,3 @@ class FactSet(Base):
     fact_exercise_id = Column(Integer, ForeignKey("fact_exercises.id"), nullable=False)
 
     fact_exercise = relationship("FactExercise", back_populates="fact_sets")
-

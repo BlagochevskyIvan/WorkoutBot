@@ -8,10 +8,24 @@ from config.states import MENU, GET_SET_WEIGHT, GET_SET_REPS, EDIT_SET_WEIGHT, E
 from re import match
 
 
+def set_button_row(set_obj, index: int, total: int):
+    row = [
+        InlineKeyboardButton(
+            text=f"{index + 1}. {pretty_float(set_obj.weight)}кг х {set_obj.reps}",
+            callback_data=f"{index + 1}set_{set_obj.id}"
+        )
+    ]
+    if index > 0:
+        row.append(InlineKeyboardButton(text="↑", callback_data=f"move_set_{set_obj.id}_up"))
+    if index < total - 1:
+        row.append(InlineKeyboardButton(text="↓", callback_data=f"move_set_{set_obj.id}_down"))
+    return row
+
+
 async def list_sets(update: Update, context: ContextTypes.DEFAULT_TYPE) -> None:
     query = update.callback_query
     await query.answer()
-    if str(query.data) != "sets":
+    if str(query.data).startswith("exercise_"):
         exercise_id = int(query.data.split("_")[1])
         context.user_data["exercise_id"] = exercise_id
     exercise_id = context.user_data["exercise_id"]
@@ -33,19 +47,10 @@ async def list_sets(update: Update, context: ContextTypes.DEFAULT_TYPE) -> None:
         )
         return MENU
 
-    num = 0
-    for set in sets:
-        num += 1
-        keyboard.extend(
-            [
-                [
-                    InlineKeyboardButton(
-                        text=f"{num}. {pretty_float(set.weight)}кг х {set.reps}",
-                        callback_data=f"{num}set_{set.id}",
-                    )
-                ]
-            ]
-        )
+    keyboard.extend(
+        set_button_row(set_obj, index, len(sets))
+        for index, set_obj in enumerate(sets)
+    )
 
     keyboard.extend(
         [
@@ -105,24 +110,15 @@ async def create_set_handler(update: Update, context: ContextTypes.DEFAULT_TYPE)
     if validate_num(reps):
         exercise_id = int(context.user_data.get("exercise_id"))
         set_weight = float(context.user_data.get("set_weight"))
-        set = await create_set(exercise_id=exercise_id, weight=set_weight, reps=int(reps))
+        await create_set(exercise_id=exercise_id, weight=set_weight, reps=int(reps))
 
         exercise = await get_exercise(exercise_id)
         sets = await get_sets(exercise_id)
         keyboard = []
-        num = 0
-        for set in sets:
-            num += 1
-            keyboard.extend(
-                [
-                    [
-                        InlineKeyboardButton(
-                            text=f"{num}. {pretty_float(set.weight)}кг х {set.reps}",
-                            callback_data=f"{num}set_{set.id}",
-                        )
-                    ]
-                ]
-            )
+        keyboard.extend(
+            set_button_row(set_obj, index, len(sets))
+            for index, set_obj in enumerate(sets)
+        )
 
         keyboard.extend(
             [
@@ -194,19 +190,10 @@ async def delete_set(update: Update, context: ContextTypes.DEFAULT_TYPE) -> None
         )
         return MENU
 
-    num = 0
-    for set in sets:
-        num += 1
-        keyboard.extend(
-            [
-                [
-                    InlineKeyboardButton(
-                        text=f"{num}. {pretty_float(set.weight)}кг х {set.reps}",
-                        callback_data=f"{num}set_{set.id}",
-                    )
-                ]
-            ]
-        )
+    keyboard.extend(
+        set_button_row(set_obj, index, len(sets))
+        for index, set_obj in enumerate(sets)
+    )
 
     keyboard.extend(
         [
@@ -263,24 +250,15 @@ async def edit_set_handler(update: Update, context: ContextTypes.DEFAULT_TYPE) -
     if validate_num(reps):
         set_id = int(context.user_data.get("set_id"))
         set_weight = float(context.user_data.get("set_weight"))
-        set = await edit_set(set_id=set_id, weight=set_weight, reps=int(reps))
+        await edit_set(set_id=set_id, weight=set_weight, reps=int(reps))
         exercise_id = int(context.user_data.get("exercise_id"))
         exercise = await get_exercise(exercise_id)
         sets = await get_sets(exercise_id)
         keyboard = []
-        num = 0
-        for set in sets:
-            num += 1
-            keyboard.extend(
-                [
-                    [
-                        InlineKeyboardButton(
-                            text=f"{num}. {pretty_float(set.weight)}кг х {set.reps}",
-                            callback_data=f"{num}set_{set.id}",
-                        )
-                    ]
-                ]
-            )
+        keyboard.extend(
+            set_button_row(set_obj, index, len(sets))
+            for index, set_obj in enumerate(sets)
+        )
 
         keyboard.extend(
             [
@@ -306,6 +284,3 @@ async def edit_set_handler(update: Update, context: ContextTypes.DEFAULT_TYPE) -
             text="Повторения должены быть числом\nВведите количество повторений:",
         )
         return EDIT_SET_REPS
-
-
-

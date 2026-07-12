@@ -113,5 +113,3 @@ async def workout_way(update: Update, context: ContextTypes.DEFAULT_TYPE):
 
     return GET_FACT_REPS
 
-
-
