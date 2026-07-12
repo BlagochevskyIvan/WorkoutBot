@@ -110,7 +110,7 @@ async def create_set_handler(update: Update, context: ContextTypes.DEFAULT_TYPE)
     if validate_num(reps):
         exercise_id = int(context.user_data.get("exercise_id"))
         set_weight = float(context.user_data.get("set_weight"))
-        set = await create_set(exercise_id=exercise_id, weight=set_weight, reps=int(reps))
+        await create_set(exercise_id=exercise_id, weight=set_weight, reps=int(reps))
 
         exercise = await get_exercise(exercise_id)
         sets = await get_sets(exercise_id)
@@ -250,7 +250,7 @@ async def edit_set_handler(update: Update, context: ContextTypes.DEFAULT_TYPE) -
     if validate_num(reps):
         set_id = int(context.user_data.get("set_id"))
         set_weight = float(context.user_data.get("set_weight"))
-        set = await edit_set(set_id=set_id, weight=set_weight, reps=int(reps))
+        await edit_set(set_id=set_id, weight=set_weight, reps=int(reps))
         exercise_id = int(context.user_data.get("exercise_id"))
         exercise = await get_exercise(exercise_id)
         sets = await get_sets(exercise_id)

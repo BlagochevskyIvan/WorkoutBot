@@ -1,7 +1,7 @@
 from fastapi import APIRouter, Depends
 
-from fastapi import Request, Response, status
-from fastapi.responses import PlainTextResponse, FileResponse, JSONResponse
+from fastapi import Response, status
+from fastapi.responses import JSONResponse
 from fastapi.exceptions import HTTPException
 
 from db.user_crud import get_user_crud
@@ -16,13 +16,6 @@ from server.schemas.exercise import ExerciseResponse, ExerciseCreate
 from server.schemas.set import SetResponse, SetCreate
 from server.schemas.order import OrderUpdate
 from server.dependency.auth import get_current_telegram_id
-
-from telegram import Update
-from config.cp_config import (
-    TEMPLATE_PATH,
-    WEBHOOK_PATH,
-    SECRET_TOKEN,
-)
 from config.logger import logger
 
 router = APIRouter()
