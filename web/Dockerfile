@@ -1,13 +1,14 @@
-FROM node:22-alpine 
+FROM node:22-alpine
 
 WORKDIR /app
 
-COPY package*.json ./
+ENV NEXT_TELEMETRY_DISABLED=1
 
-RUN npm install
-
-EXPOSE 3000
+COPY package.json package-lock.json ./
+RUN npm ci --prefer-offline --no-audit --no-fund
 
 COPY . .
 
-CMD [ "npm", "run", "dev" ]
+EXPOSE 3000
+
+CMD ["npm", "run", "dev"]
