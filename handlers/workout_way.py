@@ -58,7 +58,8 @@ async def workout_way(update: Update, context: ContextTypes.DEFAULT_TYPE):
     await create_fact_set(
         fact_exercise_id=fact_exercise.id,
         reps=int(reps),
-        weight=fact_set.weight
+        weight=fact_set.weight,
+        nom_reps=fact_set.reps
     )
 
     context.user_data["weight_sum"] += fact_set.weight * int(reps)
