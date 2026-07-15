@@ -66,9 +66,19 @@ async def init_position_columns(conn):
         )
 
 
+async def init_registration_columns(conn):
+    await conn.execute(
+        text(
+            "ALTER TABLE users "
+            "ADD COLUMN IF NOT EXISTS is_registered BOOLEAN NOT NULL DEFAULT FALSE"
+        )
+    )
+
+
 async def init_db():
     async with engine.begin() as conn:
         await conn.run_sync(Base.metadata.create_all)
+        await init_registration_columns(conn)
         await init_position_columns(conn)
         await conn.commit()
     logger.info('ВСЕ ТАБЛИЦЫ УСПЕШНО СОЗДАНЫ')
@@ -103,7 +113,6 @@ def init_fastapi_app():
     app.include_router(common_router)
     app.include_router(api_router, prefix='/api')
     return app
-
 
 
 

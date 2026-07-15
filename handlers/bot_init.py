@@ -13,9 +13,9 @@ from config.cp_config import (
     TELEGRAM_TOKEN,
 )
 from config.logger import logger
-from config.states import MENU, GET_DATE, PROFILE, GET_PROGRAMM_NAME, GET_WORKOUT_NAME, GET_EXERCISE_NAME, GET_SET_WEIGHT, GET_SET_REPS, GET_FACT_REPS, EDIT_SET_WEIGHT, EDIT_SET_REPS
+from config.states import MENU, GET_DATE, GET_GENDER, PROFILE, GET_PROGRAMM_NAME, GET_WORKOUT_NAME, GET_EXERCISE_NAME, GET_SET_WEIGHT, GET_SET_REPS, GET_FACT_REPS, EDIT_SET_WEIGHT, EDIT_SET_REPS, GET_HEIGHT, GET_WEIGHT, GET_BODY_FAT_PERCENTAGE
 from handlers.common import start, menu
-from handlers.profile import get_date, get_gender, get_experience, get_place, get_user
+from handlers.profile import get_date, get_gender, get_experience, get_place, get_height, get_weight, get_body_fat_percentage, get_user
 from handlers.programs import list_programs, get_program_name, create_program_handler, delete_program
 from handlers.workout import list_workouts, get_workout_name, create_workout_handler, delete_workout
 from handlers.exercise import list_exercises, get_exercise_name, create_exercise_handler, delete_exercise
@@ -64,11 +64,16 @@ def create_bot_app():
                 CallbackQueryHandler(move_exercise, pattern=r"^move_exercise_\d+_(up|down)$"),
                 CallbackQueryHandler(move_set, pattern=r"^move_set_\d+_(up|down)$"),
             ],
-            PROFILE: [
+            GET_GENDER: [
                 CallbackQueryHandler(get_gender, pattern="^(male|female)$"),
+            ],
+            PROFILE: [
                 CallbackQueryHandler(get_experience, pattern="^(beginner|intermediate|advanced)$"),
                 CallbackQueryHandler(get_place, pattern="^(flat|gym)$"),
             ],
+            GET_HEIGHT: [MessageHandler(filters.TEXT & ~filters.COMMAND, get_height)],
+            GET_WEIGHT: [MessageHandler(filters.TEXT & ~filters.COMMAND, get_weight)],
+            GET_BODY_FAT_PERCENTAGE: [MessageHandler(filters.TEXT & ~filters.COMMAND, get_body_fat_percentage)],
             GET_DATE: [MessageHandler(filters.TEXT & ~filters.COMMAND, get_date)],
             GET_PROGRAMM_NAME: [MessageHandler(filters.TEXT & ~filters.COMMAND, create_program_handler)],
             GET_WORKOUT_NAME: [MessageHandler(filters.TEXT & ~filters.COMMAND, create_workout_handler)],
@@ -77,7 +82,7 @@ def create_bot_app():
             GET_SET_REPS: [MessageHandler(filters.TEXT & ~filters.COMMAND, create_set_handler)],
             GET_FACT_REPS: [MessageHandler(filters.TEXT & ~filters.COMMAND, workout_way)],
             EDIT_SET_WEIGHT: [MessageHandler(filters.TEXT & ~filters.COMMAND, edit_set_reps)],
-            EDIT_SET_REPS: [MessageHandler(filters.TEXT & ~filters.COMMAND, edit_set_handler)]
+            EDIT_SET_REPS: [MessageHandler(filters.TEXT & ~filters.COMMAND, edit_set_handler)],
         },
         fallbacks=[CommandHandler("start", start)],
         name="main_conversation",

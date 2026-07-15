@@ -15,6 +15,7 @@ class User(Base):
     experience = Column(String, nullable=True)
     place = Column(String, nullable=True)
     birth_date = Column(Date, nullable=True)
+    is_registered = Column(Boolean, nullable=False, default=False, server_default="false")
 
     programs = relationship(
         "Program",
@@ -24,6 +25,22 @@ class User(Base):
     )
 
     fact_workouts = relationship("FactWorkout", back_populates="user", cascade="all, delete-orphan")
+    params = relationship("Params", back_populates="user", cascade="all, delete-orphan")
+
+class Params(Base):
+    __tablename__ = "params"
+
+    id = Column(Integer, primary_key=True, autoincrement=True)
+    user_id = Column(Integer, ForeignKey("users.id"), nullable=False)
+    weight = Column(Float, nullable=True)
+    height = Column(Float, nullable=True)
+    body_fat_percentage = Column(Float, nullable=True)
+    muscle_mass_percentage = Column(Float, nullable=True)
+    water_percentage = Column(Float, nullable=True)
+    bone_mass_percentage = Column(Float, nullable=True)
+    date = Column(Date, default=func.current_date())
+
+    user = relationship("User", back_populates="params")
 
 class Program(Base):
     __tablename__ = "programs"

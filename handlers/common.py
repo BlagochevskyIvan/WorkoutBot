@@ -4,7 +4,7 @@ from telegram.ext import (
     ConversationHandler,
 )
 
-from config.states import PROFILE, MENU
+from config.states import GET_GENDER, MENU
 from db.user_crud import get_user_crud, create_user
 
 from config.cp_config import WEBAPP_URL
@@ -21,37 +21,38 @@ async def start(update: Update, context: ContextTypes.DEFAULT_TYPE) -> int:
 
     if not db_user:
         db_user = await create_user(tg_user.id, tg_user.username)
+
+    if not db_user.is_registered:
         keyboard = [
             [
                 InlineKeyboardButton("Мужчина", callback_data="male"),
                 InlineKeyboardButton("Женщина", callback_data="female"),
-                
             ]
         ]
         await context.bot.send_message(
             chat_id=chat_id,
-            text=f"Привет, {tg_user.first_name}! Добро пожаловать в бота.\n\nКто вы?",
+            text=f"Привет, {tg_user.first_name}! Для регистрации укажите ваш пол.",
             reply_markup=InlineKeyboardMarkup(keyboard),
         )
         await context.bot.delete_message(
             chat_id=update.effective_chat.id, message_id=update.effective_message.id
         )
-        return PROFILE
-    else:
-        keyboard = [
-            [InlineKeyboardButton("Программы тренировок", callback_data="programs")],
-            [InlineKeyboardButton("Профиль", callback_data="profile")],
-            [InlineKeyboardButton(web_app=WebAppInfo(url=WEBAPP_URL+"/programs"), text="Веб-версия")],
-        ]
-        await context.bot.send_message(
-            chat_id=chat_id,
-            text="Вы уже зарегистрированы в боте. Используйте меню для навигации.",
-            reply_markup=InlineKeyboardMarkup(keyboard),
-        )
-        await context.bot.delete_message(
-            chat_id=update.effective_chat.id, message_id=update.effective_message.id
-        )
-        return MENU
+        return GET_GENDER
+
+    keyboard = [
+        [InlineKeyboardButton("Программы тренировок", callback_data="programs")],
+        [InlineKeyboardButton("Профиль", callback_data="profile")],
+        [InlineKeyboardButton(web_app=WebAppInfo(url=WEBAPP_URL+"/programs"), text="Веб-версия")],
+    ]
+    await context.bot.send_message(
+        chat_id=chat_id,
+        text="Вы уже зарегистрированы в боте. Используйте меню для навигации.",
+        reply_markup=InlineKeyboardMarkup(keyboard),
+    )
+    await context.bot.delete_message(
+        chat_id=update.effective_chat.id, message_id=update.effective_message.id
+    )
+    return MENU
 
 
 async def menu(update: Update, context: ContextTypes.DEFAULT_TYPE) -> int:
@@ -60,6 +61,7 @@ async def menu(update: Update, context: ContextTypes.DEFAULT_TYPE) -> int:
     keyboard = [
         [InlineKeyboardButton("Программы тренировок", callback_data="programs")],
         [InlineKeyboardButton("Профиль", callback_data="profile")],
+        [InlineKeyboardButton(web_app=WebAppInfo(url=WEBAPP_URL+"/programs"), text="Веб-версия")],
     ]
     await query.edit_message_text(
         text="Главное меню. Выберите действие.",

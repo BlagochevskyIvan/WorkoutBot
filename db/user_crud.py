@@ -1,5 +1,5 @@
 from db.database import get_session
-from db.models import User
+from db.models import User, Params
 from sqlalchemy import select, update
 from typing import Optional
 
@@ -29,6 +29,43 @@ async def add_gender(telegram_id: int, gender) -> None:
             .where(User.telegram_id == telegram_id)
         )
         await session.commit()
+
+async def add_params(
+    telegram_id: int,
+    weight: float,
+    height: float,
+    body_fat_percentage: float,
+) -> None:
+    """Добавляет параметры и завершает регистрацию пользователя"""
+    async with get_session() as session:
+        stmt = select(User).where(User.telegram_id == telegram_id)
+        result = await session.execute(stmt)
+        user = result.scalars().first()
+
+        if not user:
+            return
+
+        params = Params(
+            user_id=user.id,
+            weight=weight,
+            height=height,
+            body_fat_percentage=body_fat_percentage,
+        )
+        session.add(params)
+        user.is_registered = True
+        await session.commit()
+
+async def get_last_params(telegram_id: int) -> Optional[Params]:
+    """Получает последние параметры пользователя"""
+    async with get_session() as session:
+        stmt = (
+            select(Params)
+            .join(User, Params.user_id == User.id)
+            .where(User.telegram_id == telegram_id)
+            .order_by(Params.id.desc())
+        )
+        result = await session.execute(stmt)
+        return result.scalars().first()
 
 async def add_expirience(telegram_id: int, experience):
     """добавляет опыт пользователя"""

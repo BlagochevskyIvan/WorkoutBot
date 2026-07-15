@@ -7,9 +7,9 @@ from telegram.ext import (
     ContextTypes,
 )
 
-from config.states import MENU, GET_DATE, PROFILE
-from db.user_crud import add_gender, add_birth_date, add_expirience, add_place, get_user_crud
-from libs.sub_func import get_true_date, validate_date
+from config.states import MENU, GET_DATE, PROFILE, GET_HEIGHT, GET_WEIGHT, GET_BODY_FAT_PERCENTAGE
+from db.user_crud import add_gender, add_birth_date, add_expirience, add_place, add_params, get_last_params, get_user_crud
+from libs.sub_func import get_true_date, pretty_float, validate_date, validate_num
 from db.fact_workout_crud import get_count_workouts
 
 async def get_gender(update: Update, context: ContextTypes.DEFAULT_TYPE) -> int:
@@ -18,14 +18,79 @@ async def get_gender(update: Update, context: ContextTypes.DEFAULT_TYPE) -> int:
     gender = query.data
     await add_gender(telegram_id=update.effective_user.id, gender=gender)
     context.user_data["gender"] = gender
-    keyboard = [[InlineKeyboardButton("Менее года", callback_data='beginner'),
-                 InlineKeyboardButton("1-3 года", callback_data='intermediate')],
-                [InlineKeyboardButton("Более 3 лет", callback_data='advanced')]]
     await query.edit_message_text(
-        text="Пол установлен. \nТеперь укажите стаж тренировок",
-        reply_markup=InlineKeyboardMarkup(keyboard)
+        text="Пол установлен.\nТеперь введите ваш рост в сантиметрах:",
     )
-    return PROFILE
+    context.user_data["question_message_id"] = query.message.message_id
+    return GET_HEIGHT
+
+async def get_height(update: Update, context: ContextTypes.DEFAULT_TYPE) -> int:
+    await update.message.delete()
+    height = update.message.text.replace(",", ".")
+
+    if not validate_num(height) or float(height) == 0:
+        await context.bot.edit_message_text(
+            chat_id=update.effective_chat.id,
+            message_id=context.user_data["question_message_id"],
+            text="Некорректный рост. Введите рост в сантиметрах, например 180:",
+        )
+        return GET_HEIGHT
+
+    context.user_data["height"] = float(height)
+    await context.bot.edit_message_text(
+        chat_id=update.effective_chat.id,
+        message_id=context.user_data["question_message_id"],
+        text="Рост сохранён.\nТеперь введите ваш вес в килограммах:",
+    )
+    return GET_WEIGHT
+
+async def get_weight(update: Update, context: ContextTypes.DEFAULT_TYPE) -> int:
+    await update.message.delete()
+    weight = update.message.text.replace(",", ".")
+
+    if not validate_num(weight) or float(weight) == 0:
+        await context.bot.edit_message_text(
+            chat_id=update.effective_chat.id,
+            message_id=context.user_data["question_message_id"],
+            text="Некорректный вес. Введите вес в килограммах, например 75.5:",
+        )
+        return GET_WEIGHT
+
+    context.user_data["weight"] = float(weight)
+    await context.bot.edit_message_text(
+        chat_id=update.effective_chat.id,
+        message_id=context.user_data["question_message_id"],
+        text="Вес сохранён.\nТеперь введите процент жира:",
+    )
+    return GET_BODY_FAT_PERCENTAGE
+
+async def get_body_fat_percentage(update: Update, context: ContextTypes.DEFAULT_TYPE) -> int:
+    await update.message.delete()
+    body_fat_percentage = update.message.text.replace(",", ".")
+
+    if not validate_num(body_fat_percentage) or float(body_fat_percentage) > 100:
+        await context.bot.edit_message_text(
+            chat_id=update.effective_chat.id,
+            message_id=context.user_data["question_message_id"],
+            text="Некорректный процент жира. Введите число от 0 до 100:",
+        )
+        return GET_BODY_FAT_PERCENTAGE
+
+    await add_params(
+        telegram_id=update.effective_user.id,
+        weight=context.user_data["weight"],
+        height=context.user_data["height"],
+        body_fat_percentage=float(body_fat_percentage),
+    )
+    keyboard = [[InlineKeyboardButton("Меню", callback_data="menu")]]
+    await context.bot.edit_message_text(
+        chat_id=update.effective_chat.id,
+        message_id=context.user_data["question_message_id"],
+        text="Параметры сохранены. Регистрация завершена!",
+        reply_markup=InlineKeyboardMarkup(keyboard),
+    )
+    context.user_data.clear()
+    return MENU
 
 async def get_experience(update: Update, context: ContextTypes.DEFAULT_TYPE) -> int:
     query = update.callback_query
@@ -86,6 +151,11 @@ async def get_user(update: Update, context: ContextTypes.DEFAULT_TYPE) -> None:
     user_name = user.full_name
     user = await get_user_crud(telegram_id=user.id)
     user_workouts = await get_count_workouts(user_tg_id=user.telegram_id)
+    params = await get_last_params(telegram_id=user.telegram_id)
+    gender = {"male": "Мужчина", "female": "Женщина"}.get(user.gender, "Не указан")
+    height = f"{pretty_float(params.height)} см" if params and params.height is not None else "Не указан"
+    weight = f"{pretty_float(params.weight)} кг" if params and params.weight is not None else "Не указан"
+    body_fat_percentage = f"{pretty_float(params.body_fat_percentage)}%" if params and params.body_fat_percentage is not None else "Не указан"
     keyboard = [
         [InlineKeyboardButton("Редактировать профиль", callback_data="edit_profile")],
         [InlineKeyboardButton("В меню", callback_data="menu")]
@@ -93,7 +163,14 @@ async def get_user(update: Update, context: ContextTypes.DEFAULT_TYPE) -> None:
     await context.bot.edit_message_text(
         chat_id=update.effective_chat.id,
         message_id=query.message.message_id,
-        text = f"{user_name}\nКоличество тренировок: {user_workouts}\nДата рождения: {user.birth_date.strftime('%d/%m/%y')}",
+        text=(
+            f"{user_name}\n"
+            f"Количество тренировок: {user_workouts}\n"
+            f"Пол: {gender}\n"
+            f"Рост: {height}\n"
+            f"Вес: {weight}\n"
+            f"Процент жира: {body_fat_percentage}"
+        ),
         reply_markup=InlineKeyboardMarkup(keyboard)
     )
 
