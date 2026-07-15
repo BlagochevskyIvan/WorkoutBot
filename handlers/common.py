@@ -41,6 +41,7 @@ async def start(update: Update, context: ContextTypes.DEFAULT_TYPE) -> int:
 
     keyboard = [
         [InlineKeyboardButton("Программы тренировок", callback_data="programs")],
+        [InlineKeyboardButton("История тренировок", callback_data="history")],
         [InlineKeyboardButton("Профиль", callback_data="profile")],
         [InlineKeyboardButton(web_app=WebAppInfo(url=WEBAPP_URL+"/programs"), text="Веб-версия")],
     ]
@@ -60,6 +61,7 @@ async def menu(update: Update, context: ContextTypes.DEFAULT_TYPE) -> int:
     await query.answer()
     keyboard = [
         [InlineKeyboardButton("Программы тренировок", callback_data="programs")],
+        [InlineKeyboardButton("История тренировок", callback_data="history")],
         [InlineKeyboardButton("Профиль", callback_data="profile")],
         [InlineKeyboardButton(web_app=WebAppInfo(url=WEBAPP_URL+"/programs"), text="Веб-версия")],
     ]

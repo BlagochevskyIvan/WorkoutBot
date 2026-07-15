@@ -22,6 +22,7 @@ from handlers.exercise import list_exercises, get_exercise_name, create_exercise
 from handlers.set import list_sets, get_set_weight, get_set_reps, create_set_handler, get_set_info, delete_set, edit_set_weight, edit_set_reps, edit_set_handler
 from handlers.order import move_program, move_workout, move_exercise, move_set
 from handlers.workout_way import start_workout, workout_way
+from handlers.history import workout_history
 
 
 def create_bot_app():
@@ -63,6 +64,7 @@ def create_bot_app():
                 CallbackQueryHandler(move_workout, pattern=r"^move_workout_\d+_(up|down)$"),
                 CallbackQueryHandler(move_exercise, pattern=r"^move_exercise_\d+_(up|down)$"),
                 CallbackQueryHandler(move_set, pattern=r"^move_set_\d+_(up|down)$"),
+                CallbackQueryHandler(workout_history, pattern="^history$"),
             ],
             GET_GENDER: [
                 CallbackQueryHandler(get_gender, pattern="^(male|female)$"),
