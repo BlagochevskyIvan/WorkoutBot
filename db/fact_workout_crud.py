@@ -19,7 +19,7 @@ async def create_fact_workout(workout_id: int, user_id: int) -> FactWorkout:
         if not workout:
             raise ValueError("Workout not found")
 
-        fact_workout = FactWorkout(user=user, workout=workout)
+        fact_workout = FactWorkout(user=user, workout=workout, name=workout.name)
         session.add(fact_workout)
         await session.commit()
         await session.refresh(fact_workout)
@@ -35,6 +35,17 @@ async def get_fact_workouts(user_id: int) -> list[FactWorkout]:
             raise ValueError("User not found")
         
         return user.fact_workouts
+    
+async def get_fact_workout(fact_workout_id: int) -> FactWorkout:
+    async with get_session() as session:
+        stmt = select(FactWorkout).where(FactWorkout.id == fact_workout_id)
+        result = await session.execute(stmt)
+        fact_workout = result.scalars().first()
+
+        if not fact_workout:
+            raise ValueError("Fact workout not found")
+
+        return fact_workout
         
 async def get_count_workouts(user_tg_id: int) -> int:
     async with get_session() as session:

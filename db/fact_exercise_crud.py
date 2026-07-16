@@ -1,6 +1,7 @@
 from db.database import get_session
 from db.models import FactExercise, FactWorkout
 from sqlalchemy import select
+from sqlalchemy.orm import selectinload
 
 async def create_fact_exercise(fact_workout_id: int, name: str) -> FactExercise:
     async with get_session() as session:
@@ -17,3 +18,13 @@ async def create_fact_exercise(fact_workout_id: int, name: str) -> FactExercise:
         await session.refresh(fact_exercise)
 
         return fact_exercise
+    
+async def get_fact_exercises(fact_workout_id: int) -> list[FactExercise]:
+    async with get_session() as session:
+        stmt = select(FactWorkout).where(FactWorkout.id == fact_workout_id).options(selectinload(FactWorkout.fact_exercises))
+        result = await session.execute(stmt)
+        fact_workout = result.scalars().first() 
+        if not fact_workout:
+            raise ValueError("Fact workout not found")
+        
+        return fact_workout.fact_exercises

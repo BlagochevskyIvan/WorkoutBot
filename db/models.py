@@ -111,6 +111,7 @@ class FactWorkout(Base):
     user_id = Column(Integer, ForeignKey("users.id"))
     created_at = Column(Date, default=func.current_date())
     workout_id = Column(Integer, ForeignKey("workouts.id"))
+    name = Column(String, nullable=False)
 
 
     user = relationship("User", back_populates="fact_workouts")
