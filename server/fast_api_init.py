@@ -85,7 +85,7 @@ async def init_db():
 
 @asynccontextmanager
 async def lifespan(app: FastAPI):
-    await init_db()
+    
     bot_app: Application = create_bot_app()
     app.state.bot_app = bot_app
 

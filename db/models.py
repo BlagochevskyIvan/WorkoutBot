@@ -16,6 +16,7 @@ class User(Base):
     place = Column(String, nullable=True)
     birth_date = Column(Date, nullable=True)
     is_registered = Column(Boolean, nullable=False, default=False, server_default="false")
+    goal = Column(String, nullable=True)
 
     programs = relationship(
         "Program",

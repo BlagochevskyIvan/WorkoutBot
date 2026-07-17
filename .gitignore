@@ -8,7 +8,7 @@ bot_cache
 test.py
 test2.py
 .env-prod
-
+alembic/versions
 
 node_modules/
 .pnp/
