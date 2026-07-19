@@ -11,6 +11,7 @@ async def workout_history(update: Update, context: ContextTypes.DEFAULT_TYPE) ->
     await query.answer()
 
     fact_workouts = await get_fact_workouts(user_id=update.effective_user.id)
+    fact_workouts.reverse()
     keyboard = []
 
     for index, fact_workout in enumerate(fact_workouts):
