@@ -65,6 +65,7 @@ def create_bot_app():
                 CallbackQueryHandler(move_exercise, pattern=r"^move_exercise_\d+_(up|down)$"),
                 CallbackQueryHandler(move_set, pattern=r"^move_set_\d+_(up|down)$"),
                 CallbackQueryHandler(workout_history, pattern="^history$"),
+                CallbackQueryHandler(workout_history, pattern=r"^history_page_\d+$"),
                 CallbackQueryHandler(fact_workout_details, pattern=r"^fact_workout_\d+$"),
             ],
             GET_GENDER: [
