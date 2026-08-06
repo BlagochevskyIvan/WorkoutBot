@@ -3,12 +3,12 @@ services:
     image: postgres:15
     container_name: workout_bot-db-1
     environment:
-      POSTGRES_USER: postgres
-      POSTGRES_PASSWORD: password
-      POSTGRES_DB: db
+      POSTGRES_USER: ${POSTGRES_USER}
+      POSTGRES_PASSWORD: ${POSTGRES_PASSWORD}
+      POSTGRES_DB: ${POSTGRES_DB}
       POSTGRES_HOST_AUTH_METHOD: trust
     healthcheck:
-      test: ["CMD-SHELL", "pg_isready -U postgres -d db"]
+      test: ["CMD-SHELL", "pg_isready -U ${POSTGRES_USER} -d ${POSTGRES_DB}"]
       interval: 1s
       timeout: 3s
       retries: 15
@@ -16,7 +16,7 @@ services:
     ports:
       - "5434:5432"
     volumes:
-      - db_data:/var/lib/postgresql/data
+      - workout_data:/var/lib/postgresql/data
     networks:
       - backend
 
@@ -28,8 +28,7 @@ services:
     command: ["uvicorn", "main:app", "--host", "0.0.0.0", "--port", "8000", "--reload", "--reload-dir", "/app"]
     env_file:
       - ./.env
-    environment:
-      DATABASE_URL: postgresql+asyncpg://postgres:password@db:5432/db
+    
     depends_on:
       db:
         condition: service_healthy
@@ -92,7 +91,7 @@ services:
       - backend
 
 volumes:
-  db_data:
+  workout_data:
   web_node_modules:
   web_next_cache:
 
