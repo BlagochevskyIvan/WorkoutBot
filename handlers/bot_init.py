@@ -1,28 +1,77 @@
 from telegram.ext import (
     Application,
-    CommandHandler,
-)
-from telegram.ext import (
-    ConversationHandler,
     CallbackQueryHandler,
+    CommandHandler,
+    ConversationHandler,
     MessageHandler,
-    filters,
     PicklePersistence,
+    filters,
 )
+
 from config.cp_config import (
     TELEGRAM_TOKEN,
 )
 from config.logger import logger
-from config.states import MENU, GET_DATE, GET_GENDER, PROFILE, GET_PROGRAMM_NAME, GET_WORKOUT_NAME, GET_EXERCISE_NAME, GET_SET_WEIGHT, GET_SET_REPS, GET_FACT_REPS, EDIT_SET_WEIGHT, EDIT_SET_REPS, GET_HEIGHT, GET_WEIGHT, GET_BODY_FAT_PERCENTAGE
-from handlers.common import start, menu
-from handlers.profile import get_date, get_gender, get_experience, get_place, get_height, get_weight, get_body_fat_percentage, get_user
-from handlers.programs import list_programs, get_program_name, create_program_handler, delete_program
-from handlers.workout import list_workouts, get_workout_name, create_workout_handler, delete_workout
-from handlers.exercise import list_exercises, get_exercise_name, create_exercise_handler, delete_exercise
-from handlers.set import list_sets, get_set_weight, get_set_reps, create_set_handler, get_set_info, delete_set, edit_set_weight, edit_set_reps, edit_set_handler
-from handlers.order import move_program, move_workout, move_exercise, move_set
+from config.states import (
+    EDIT_SET_REPS,
+    EDIT_SET_WEIGHT,
+    GET_BODY_FAT_PERCENTAGE,
+    GET_DATE,
+    GET_EXERCISE_NAME,
+    GET_FACT_REPS,
+    GET_GENDER,
+    GET_HEIGHT,
+    GET_PROGRAMM_NAME,
+    GET_SET_REPS,
+    GET_SET_WEIGHT,
+    GET_WEIGHT,
+    GET_WORKOUT_NAME,
+    MENU,
+    PROFILE,
+)
+from handlers.common import menu, start
+from handlers.exercise import (
+    create_exercise_handler,
+    delete_exercise,
+    get_exercise_name,
+    list_exercises,
+)
+from handlers.history import fact_workout_details, workout_history
+from handlers.order import move_exercise, move_program, move_set, move_workout
+from handlers.profile import (
+    get_body_fat_percentage,
+    get_date,
+    get_experience,
+    get_gender,
+    get_height,
+    get_place,
+    get_user,
+    get_weight,
+)
+from handlers.programs import (
+    create_program_handler,
+    delete_program,
+    get_program_name,
+    list_programs,
+)
+from handlers.set import (
+    create_set_handler,
+    delete_set,
+    edit_set_handler,
+    edit_set_reps,
+    edit_set_weight,
+    get_set_info,
+    get_set_reps,
+    get_set_weight,
+    list_sets,
+)
+from handlers.workout import (
+    create_workout_handler,
+    delete_workout,
+    get_workout_name,
+    list_workouts,
+)
 from handlers.workout_way import start_workout, workout_way
-from handlers.history import workout_history, fact_workout_details
 
 
 def create_bot_app():
