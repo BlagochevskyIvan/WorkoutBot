@@ -2,17 +2,17 @@ FROM node:22-alpine
 
 WORKDIR /app
 
-ENV NODE_ENV=production \
-    NEXT_TELEMETRY_DISABLED=1
+ENV NEXT_TELEMETRY_DISABLED=1
 
 COPY package.json package-lock.json ./
-RUN npm ci --prefer-offline --no-audit --no-fund
+RUN npm ci --include=dev --prefer-offline --no-audit --no-fund
 
 COPY . .
 
 # NEXT_PUBLIC_* вшиваются на этапе build
 ARG NEXT_PUBLIC_URL
-ENV NEXT_PUBLIC_URL=$NEXT_PUBLIC_URL
+ENV NEXT_PUBLIC_URL=$NEXT_PUBLIC_URL \
+    NODE_ENV=production
 
 RUN npm run build
 
