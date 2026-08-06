@@ -15,5 +15,7 @@ COPY db ./db
 COPY handlers ./handlers
 COPY libs ./libs
 COPY server ./server
+COPY alembic.ini ./
+COPY alembic ./alembic
 
 CMD ["uvicorn", "main:app", "--host", "0.0.0.0", "--port", "8000"]
