@@ -1,4 +1,4 @@
-from sqlalchemy import Column, Integer, String, BigInteger, ForeignKey, Boolean, Float, Date, func
+from sqlalchemy import Column, Integer, String, BigInteger, ForeignKey, Boolean, Float, Date, func, Index
 from sqlalchemy.orm import relationship
 from sqlalchemy.orm import declarative_base
 
@@ -114,7 +114,7 @@ class FactWorkout(Base):
     workout_id = Column(Integer, ForeignKey("workouts.id"))
     name = Column(String, nullable=False)
 
-
+    __table_args__ = (Index("user_id", "created_at", "ix_fact_workouts_user_id_created_at"),)
     user = relationship("User", back_populates="fact_workouts")
     fact_exercises = relationship(
         "FactExercise",

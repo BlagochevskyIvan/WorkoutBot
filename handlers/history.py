@@ -16,6 +16,7 @@ async def workout_history(update: Update, context: ContextTypes.DEFAULT_TYPE) ->
     if query.data.startswith("history_page_"):
         page = int(query.data.split("_")[-1])
 
+   
     fact_workouts = await get_fact_workouts(user_id=update.effective_user.id)
     fact_workouts.reverse()
     page_count = max(1, (len(fact_workouts) + HISTORY_PAGE_SIZE - 1) // HISTORY_PAGE_SIZE)
