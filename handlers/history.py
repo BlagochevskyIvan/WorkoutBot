@@ -2,70 +2,109 @@ from telegram import Update, InlineKeyboardButton, InlineKeyboardMarkup
 from telegram.ext import ContextTypes
 
 from config.states import MENU
-from db.fact_workout_crud import get_fact_workouts, get_fact_workout
+from db.fact_workout_crud import get_fact_workouts, get_fact_workout, get_fact_workouts_page, get_fact_workout_details
 from db.fact_exercise_crud import get_fact_exercises
 from db.fact_set_crud import get_fact_sets
 
 HISTORY_PAGE_SIZE = 7
-
-async def workout_history(update: Update, context: ContextTypes.DEFAULT_TYPE) -> int:
+async def workout_history(
+    update: Update,
+    context: ContextTypes.DEFAULT_TYPE
+) -> int:
     query = update.callback_query
     await query.answer()
 
-    page = 0
+    page = 1
+
     if query.data.startswith("history_page_"):
         page = int(query.data.split("_")[-1])
 
-   
-    fact_workouts = await get_fact_workouts(user_id=update.effective_user.id)
-    fact_workouts.reverse()
-    page_count = max(1, (len(fact_workouts) + HISTORY_PAGE_SIZE - 1) // HISTORY_PAGE_SIZE)
-    page = min(page, page_count - 1)
-    start_index = page * HISTORY_PAGE_SIZE
-    page_workouts = fact_workouts[start_index:start_index + HISTORY_PAGE_SIZE]
+    fact_workouts, total = await get_fact_workouts_page(
+        telegram_id=update.effective_user.id,
+        page=page,
+        page_size=HISTORY_PAGE_SIZE
+    )
+
+    page_count = max(
+        1,
+        (total + HISTORY_PAGE_SIZE - 1) // HISTORY_PAGE_SIZE
+    )
+
+    # Защита от некорректной страницы
+    page = max(1, min(page, page_count))
+
     keyboard = []
 
-    for index, fact_workout in enumerate(page_workouts, start=start_index + 1):
+    start_index = (page - 1) * HISTORY_PAGE_SIZE + 1
+
+    for index, fact_workout in enumerate(
+        fact_workouts,
+        start=start_index
+    ):
         keyboard.append([
             InlineKeyboardButton(
-                text=f"Тренировка {index} | {fact_workout.created_at.strftime('%d/%m/%y')}",
+                text=(
+                    f"Тренировка {index} | "
+                    f"{fact_workout.created_at.strftime('%d/%m/%y')}"
+                ),
                 callback_data=f"fact_workout_{fact_workout.id}"
             )
         ])
 
-    context.user_data["fact_workout_date"] = fact_workouts
-    context.user_data["history_page"] = page
-
     page_keyboard = []
-    if page > 0:
-        page_keyboard.append(InlineKeyboardButton(text="⬅️ Назад", callback_data=f"history_page_{page - 1}"))
-    if page < page_count - 1:
-        page_keyboard.append(InlineKeyboardButton(text="Вперёд ➡️", callback_data=f"history_page_{page + 1}"))
+
+    if page > 1:
+        page_keyboard.append(
+            InlineKeyboardButton(
+                text="⬅️ Назад",
+                callback_data=f"history_page_{page - 1}"
+            )
+        )
+
+    if page < page_count:
+        page_keyboard.append(
+            InlineKeyboardButton(
+                text="Вперёд ➡️",
+                callback_data=f"history_page_{page + 1}"
+            )
+        )
+
     if page_keyboard:
         keyboard.append(page_keyboard)
 
-    keyboard.append([InlineKeyboardButton(text="В меню", callback_data="menu")])
+    keyboard.append([
+        InlineKeyboardButton(
+            text="В меню",
+            callback_data="menu"
+        )
+    ])
 
-    text = f"История тренировок\nСтраница {page + 1} из {page_count}"
-    if not fact_workouts:
+    if total == 0:
         text = "У вас пока нет завершённых тренировок"
+    else:
+        text = (
+            "История тренировок\n"
+            f"Страница {page} из {page_count}"
+        )
+
+    context.user_data["history_page"] = page
 
     await query.edit_message_text(
         text=text,
         reply_markup=InlineKeyboardMarkup(keyboard)
     )
+
     return MENU
 
 async def fact_workout_details(update: Update, context: ContextTypes.DEFAULT_TYPE) -> int:
     query = update.callback_query
     await query.answer()
     fact_workout_id = int(query.data.split("_")[-1])
-    fact_exercises = await get_fact_exercises(fact_workout_id=fact_workout_id)
-    fact_workout = await get_fact_workout(fact_workout_id=fact_workout_id)
+    fact_workout = await get_fact_workout_details(fact_workout_id=fact_workout_id)
     text = f"Тренировка {fact_workout.created_at.strftime('%d/%m/%y')}\n{fact_workout.name}\n\n"
-    for index, fact_exercise in enumerate(fact_exercises):
+    for index, fact_exercise in enumerate(fact_workout.fact_exercises):
         text += f"{index + 1}. {fact_exercise.name}\n"
-        sets = await get_fact_sets(fact_exercise_id=fact_exercise.id)
+        sets = fact_exercise.fact_sets
         for set_index, fact_set in enumerate(sets):
             text += f"   Подход {set_index + 1}: {fact_set.weight} кг x {fact_set.reps}\n"
 

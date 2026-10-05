@@ -1,5 +1,5 @@
 from db.database import get_session
-from db.models import Workout, FactWorkout, User
+from db.models import Workout, FactWorkout, User, FactExercise, FactSet
 from sqlalchemy import select, func
 from sqlalchemy.orm import selectinload
 
@@ -92,3 +92,21 @@ async def get_count_workouts(user_tg_id: int) -> int:
         result = await session.execute(stmt)
         count = result.scalar_one()
         return count
+
+async def get_fact_workout_details(fact_workout_id: int) -> FactWorkout:
+    async with get_session() as session:
+        stmt = (
+            select(FactWorkout)
+            .where(FactWorkout.id == fact_workout_id)
+            .options(
+                selectinload(FactWorkout.fact_exercises)
+                .selectinload(FactExercise.fact_sets)
+            )
+        )
+        result = await session.execute(stmt)
+        fact_workout = result.scalars().first()
+
+        if not fact_workout:
+            raise ValueError("Fact workout not found")
+
+        return fact_workout
