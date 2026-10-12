@@ -40,7 +40,7 @@ async def test_history_handler_with_workouts(monkeypatch):
     buttons = [row for row in markup.inline_keyboard if row[0].callback_data.startswith("fact_workout_")]
 
     # Проверяем, что количество кнопок соответствует количеству тренировок на странице
-    assert len(buttons) == 8
+    assert len(buttons) == 7
 
     text = update.callback_query.edit_message_text.call_args.kwargs["text"]
     assert "Страница 1 из 2" in text

@@ -20,16 +20,6 @@ from config.logger import logger
 
 router = APIRouter()
 
-@router.get('/user')
-async def get_user():
-    logger.info('мы')
-    return JSONResponse({'name':'vanya'})
-
-@router.get('/user2')
-async def get_user2():
-    logger.info('мы')
-    return JSONResponse({'name':'vanya2'})
-
 @router.get('/me')
 async def get_me(telegram_id:int = Depends(get_current_telegram_id)):
     user = await get_user_crud(telegram_id)
