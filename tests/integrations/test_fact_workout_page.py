@@ -47,3 +47,18 @@ async def test_first_page_is_seven(session):
     assert len(items) == HISTORY_PAGE_SIZE
     assert total == 20
     assert all(item.name == "Test Fact Workout" for item in items)
+
+@pytest.mark.asyncio
+async def test_last_page_test(session):
+    await seed(session, telegram_id=124, count=20, name="Test Fact Workout")
+    items, total = await get_fact_workouts_page(telegram_id=124, page=3, page_size=HISTORY_PAGE_SIZE)
+    assert len(items) == 6
+    assert total == 20
+
+@pytest.mark.asyncio
+async def test_user_without_workouts(session):
+    await seed(session, telegram_id=25, count=0, name="fw")
+    items, total = await get_fact_workouts_page(telegram_id=25, page=1, page_size=HISTORY_PAGE_SIZE)
+    assert len(items) == 0
+    assert total == 0
+
