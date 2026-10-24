@@ -37,6 +37,18 @@ async def seed(db, telegram_id, count, name):
         db.add(fact_workout)
     await db.commit()
 
+async def seed2(db, telegram_id, count, name):
+    user = User(telegram_id=telegram_id)
+    db.add(user)
+    await db.flush()
+    program = Program(name=name, owner=user)
+    db.add(program)
+    await db.flush()
+    workout = Workout(name=name, program=program)
+    db.add(workout)
+    await db.flush()
+    fw1 = FactWorkout(user_id=user.id, workout=workout, name=name, created_at="")
+
 @pytest.mark.asyncio
 async def test_first_page_is_seven(session):
     await seed(session, telegram_id=123, count=20, name="Test Fact Workout")
