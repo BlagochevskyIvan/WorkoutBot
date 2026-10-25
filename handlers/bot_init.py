@@ -139,6 +139,7 @@ def create_bot_app():
         },
         fallbacks=[CommandHandler("start", start)],
         name="main_conversation",
+        persistent=True
     )
 
     application.add_handler(conv_handler)

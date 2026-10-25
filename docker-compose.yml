@@ -36,12 +36,6 @@ services:
     expose:
       - "8000"
     volumes:
-      - ./main.py:/app/main.py
-      - ./config:/app/config
-      - ./db:/app/db
-      - ./handlers:/app/handlers
-      - ./libs:/app/libs
-      - ./server:/app/server
       - ./bot_cache:/app/bot_cache
     healthcheck:
       test: ["CMD", "python", "-c", "import socket; socket.create_connection(('127.0.0.1', 8000), 2).close()"]

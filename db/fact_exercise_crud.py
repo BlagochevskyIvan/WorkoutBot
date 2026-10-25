@@ -28,3 +28,15 @@ async def get_fact_exercises(fact_workout_id: int) -> list[FactExercise]:
             raise ValueError("Fact workout not found")
         
         return fact_workout.fact_exercises
+
+async def get_fact_exercise(fact_exercise_id: int) -> FactExercise:
+    async with get_session() as session:
+        stmt = select(FactExercise).where(FactExercise.id == fact_exercise_id)
+        result = await session.execute(stmt)
+        fact_exercise = result.scalars().first()
+        if fact_exercise:
+            return fact_exercise
+
+        
+                
+        
