@@ -72,7 +72,7 @@ from handlers.workout import (
     list_workouts,
 )
 from handlers.workout_way import start_workout, workout_way
-
+from handlers.antispam import antispam
 
 def create_bot_app():
     persistence = PicklePersistence("bot_cache")
@@ -143,5 +143,6 @@ def create_bot_app():
     )
 
     application.add_handler(conv_handler)
+    application.add_handler(CallbackQueryHandler(antispam), -1)
     
     return application

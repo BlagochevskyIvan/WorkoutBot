@@ -21,7 +21,7 @@ jobs:
         ports:
           - 5435:5432
         options: >-
-          --health-cmd "pg_isready -U user -d db"
+          --health-cmd "pg_isready -U user -d test_db"
           --health-interval 2s
           --health-timeout 3s
           --health-retries 5
@@ -58,4 +58,4 @@ jobs:
             "cd ~/WorkoutBot && git pull --ff-only && docker compose -f docker-compose.prod.yml up -d --build"
 
       - name: Smoke-тест
-        run: curl --fail --retry 20 --retry-delay 3 --retry-all-errors "$SITE_URL/healthz"
+        run: curl --fail --retry 20 --retry-delay 3 --retry-all-errors "${{ env.SITE_URL }}/healthz"

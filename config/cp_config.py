@@ -28,3 +28,5 @@ if not SECRET_TOKEN:
     logger.warning(
         "No SECRET_TOKEN provided. Set TELEGRAM_SECRET/WEBHOOK_SECRET to verify Telegram requests."
     )
+
+REDIS_URL = os.getenv("REDIS_URL")
