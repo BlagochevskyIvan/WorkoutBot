@@ -1,16 +1,32 @@
 from telegram import (
-    Update,
-    InlineKeyboardMarkup,
     InlineKeyboardButton,
+    InlineKeyboardMarkup,
+    Update,
 )
 from telegram.ext import (
     ContextTypes,
 )
 
-from config.states import MENU, GET_DATE, PROFILE, GET_HEIGHT, GET_WEIGHT, GET_BODY_FAT_PERCENTAGE
-from db.user_crud import add_gender, add_birth_date, add_expirience, add_place, add_params, get_last_params, get_user_crud
-from libs.sub_func import get_true_date, pretty_float, validate_date, validate_num
+from config.states import (
+    GET_BODY_FAT_PERCENTAGE,
+    GET_DATE,
+    GET_HEIGHT,
+    GET_WEIGHT,
+    MENU,
+    PROFILE,
+)
 from db.fact_workout_crud import get_count_workouts
+from db.user_crud import (
+    add_birth_date,
+    add_expirience,
+    add_gender,
+    add_params,
+    add_place,
+    get_last_params,
+    get_user_crud,
+)
+from libs.sub_func import get_true_date, pretty_float, validate_date, validate_num
+
 
 async def get_gender(update: Update, context: ContextTypes.DEFAULT_TYPE) -> int:
     query = update.callback_query

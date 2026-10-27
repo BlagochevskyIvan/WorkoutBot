@@ -1,8 +1,8 @@
-from telegram import Update
+from telegram import InlineKeyboardButton, InlineKeyboardMarkup, Update
 from telegram.ext import ContextTypes
-from telegram import InlineKeyboardButton, InlineKeyboardMarkup
-from db.programs_crud import get_programs, create_program, delete_program_crud
-from config.states import MENU, GET_PROGRAMM_NAME
+
+from config.states import GET_PROGRAMM_NAME, MENU
+from db.programs_crud import create_program, delete_program_crud, get_programs
 
 
 def program_button_row(program, index: int, total: int):

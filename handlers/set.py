@@ -1,11 +1,18 @@
-from telegram import Update
-from telegram.ext import ContextTypes
-from telegram import InlineKeyboardButton, InlineKeyboardMarkup
-from db.set_crud import get_sets, create_set, get_set, delete_set_crud, edit_set
-from db.exercise_crud import get_exercise
-from libs.sub_func import validate_num, pretty_float
-from config.states import MENU, GET_SET_WEIGHT, GET_SET_REPS, EDIT_SET_WEIGHT, EDIT_SET_REPS
 from re import match
+
+from telegram import InlineKeyboardButton, InlineKeyboardMarkup, Update
+from telegram.ext import ContextTypes
+
+from config.states import (
+    EDIT_SET_REPS,
+    EDIT_SET_WEIGHT,
+    GET_SET_REPS,
+    GET_SET_WEIGHT,
+    MENU,
+)
+from db.exercise_crud import get_exercise
+from db.set_crud import create_set, delete_set_crud, edit_set, get_set, get_sets
+from libs.sub_func import pretty_float, validate_num
 
 
 def set_button_row(set_obj, index: int, total: int):

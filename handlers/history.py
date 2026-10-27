@@ -1,10 +1,15 @@
-from telegram import Update, InlineKeyboardButton, InlineKeyboardMarkup
+from telegram import InlineKeyboardButton, InlineKeyboardMarkup, Update
 from telegram.ext import ContextTypes
 
 from config.states import MENU
-from db.fact_workout_crud import get_fact_workouts, get_fact_workout, get_fact_workouts_page, get_fact_workout_details
 from db.fact_exercise_crud import get_fact_exercises
 from db.fact_set_crud import get_fact_sets
+from db.fact_workout_crud import (
+    get_fact_workout,
+    get_fact_workout_details,
+    get_fact_workouts,
+    get_fact_workouts_page,
+)
 
 HISTORY_PAGE_SIZE = 7
 async def workout_history(

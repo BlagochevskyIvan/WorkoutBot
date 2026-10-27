@@ -1,13 +1,12 @@
-from telegram import Update, InlineKeyboardMarkup, InlineKeyboardButton, WebAppInfo
+from telegram import InlineKeyboardButton, InlineKeyboardMarkup, Update, WebAppInfo
 from telegram.ext import (
     ContextTypes,
     ConversationHandler,
 )
 
-from config.states import GET_GENDER, MENU
-from db.user_crud import get_user_crud, create_user
-
 from config.cp_config import WEBAPP_URL
+from config.states import GET_GENDER, MENU
+from db.user_crud import create_user, get_user_crud
 
 
 async def start(update: Update, context: ContextTypes.DEFAULT_TYPE) -> int:

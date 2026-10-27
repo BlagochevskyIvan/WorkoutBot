@@ -1,12 +1,12 @@
-from telegram import Update, InlineKeyboardButton, InlineKeyboardMarkup
+from telegram import InlineKeyboardButton, InlineKeyboardMarkup, Update
 from telegram.ext import ContextTypes
+
 from config.states import GET_FACT_REPS, MENU
-from db.fact_workout_crud import create_fact_workout, get_fact_workouts
 from db.exercise_crud import get_exercises
-from db.set_crud import get_sets
-from db.fact_exercise_crud import create_fact_exercise
+from db.fact_exercise_crud import create_fact_exercise, get_fact_exercise
 from db.fact_set_crud import create_fact_set
-from db.fact_exercise_crud import get_fact_exercise
+from db.fact_workout_crud import create_fact_workout, get_fact_workouts
+from db.set_crud import get_sets
 
 
 async def start_workout(update: Update, context: ContextTypes) -> None:

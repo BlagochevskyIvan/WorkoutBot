@@ -1,9 +1,9 @@
-from telegram import Update
+from telegram import InlineKeyboardButton, InlineKeyboardMarkup, Update
 from telegram.ext import ContextTypes
-from telegram import InlineKeyboardButton, InlineKeyboardMarkup
-from db.exercise_crud import get_exercises, create_exercise, delete_exercise_crud
+
+from config.states import GET_EXERCISE_NAME, MENU
+from db.exercise_crud import create_exercise, delete_exercise_crud, get_exercises
 from db.workout_crud import get_workout
-from config.states import MENU, GET_EXERCISE_NAME
 
 
 def exercise_button_row(exercise, index: int, total: int):
