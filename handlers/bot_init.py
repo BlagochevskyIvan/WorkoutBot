@@ -29,6 +29,7 @@ from config.states import (
     MENU,
     PROFILE,
 )
+from handlers.antispam import antispam
 from handlers.common import menu, start
 from handlers.exercise import (
     create_exercise_handler,
@@ -72,7 +73,7 @@ from handlers.workout import (
     list_workouts,
 )
 from handlers.workout_way import start_workout, workout_way
-from handlers.antispam import antispam
+
 
 def create_bot_app():
     persistence = PicklePersistence("bot_cache")
